@@ -32,12 +32,12 @@ class PitRepoTest {
     public void createNewGame() {
 
 
-        Pit pit = pitRepo.save(Pit.builder().stones(6).bigPit(false).position(0).player(PlayerEnum.P1).build());
+        Pit pit = pitRepo.save(Pit.builder().stones(6).bigPit(false).position(0).player(PlayerEnum.P2).build());
 
         assertAll(
                 () -> assertThat(pit.getPitId()).isEqualTo(1L),
                 () -> assertThat(pit.getStones()).isEqualTo(6),
-                () -> assertThat(pit.getPlayer()).usingRecursiveComparison().isEqualTo(PlayerEnum.P1),
+                () -> assertThat(pit.getPlayer()).usingRecursiveComparison().isEqualTo(PlayerEnum.P2),
                 () -> assertThat(pit.getPosition()).isEqualTo(0),
                 () -> assertFalse(pit.isBigPit()));
 
@@ -47,7 +47,7 @@ class PitRepoTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     public void createNewGameWithPits() {
 
-        List<Pit> pits = List.of(Pit.builder().stones(6).bigPit(false).position(0).player(PlayerEnum.P1).build(),
+        List<Pit> pits = List.of(Pit.builder().stones(6).bigPit(false).position(0).player(PlayerEnum.P2).build(),
                 Pit.builder().stones(6).bigPit(false).position(1).player(PlayerEnum.P2).build());
         Game game =  Game.builder().playerAmount(2).pits(pits).build();
 

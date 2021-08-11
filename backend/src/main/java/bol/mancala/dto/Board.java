@@ -13,22 +13,11 @@ import java.util.LinkedList;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class Keyboard {
+public class Board {
 
 
-    public static final int STONES = 6;
-    private int players;
     private LinkedList<Pit> situation;
 
-
-    public Keyboard initialize(int players) {
-       /* setPlayers(players);
-        setSituation(new LinkedList<>());
-        int pitNumber = calculatePitNumber(players);
-*/
-        return new Keyboard();
-
-    }
 
 /*
 

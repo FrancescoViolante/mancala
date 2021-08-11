@@ -3,6 +3,7 @@ package bol.mancala.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 
 @Data
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class Player {
+public class Player implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

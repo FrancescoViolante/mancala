@@ -1,7 +1,7 @@
 package bol.mancala.controllers;
 
 
-import bol.mancala.dto.Keyboard;
+import bol.mancala.model.Game;
 import bol.mancala.services.GameService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ public class GameController {
 
     private GameService gameService;
 
+
     @GetMapping("/hello")
     public void hello() {
 
@@ -26,9 +27,9 @@ public class GameController {
 
 
     @GetMapping("/new-game")
-    public Keyboard createGame() {
+    public Game createGame() {
 
-        return gameService.createNewGame(2);
+        return gameService.initializeBoard(2);
 
     }
 
