@@ -26,6 +26,7 @@ target/
 /frontend/mancala/target/
 /frontend/*.iml
 /frontend/mancala/src/main/
+/frontend/mancala/node/
 
 ### NetBeans ###
 /nbproject/private/
