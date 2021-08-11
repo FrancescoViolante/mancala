@@ -20,6 +20,12 @@ target/
 *.ipr
 /backend/target/
 /backend/*.iml
+/frontend/dist/
+/frontend/mancala/node_modules/
+/frontend/mancala/e2e/
+/frontend/mancala/target/
+/frontend/*.iml
+/frontend/mancala/src/main/
 
 ### NetBeans ###
 /nbproject/private/
