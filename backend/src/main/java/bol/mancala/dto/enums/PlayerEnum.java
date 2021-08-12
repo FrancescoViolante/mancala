@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public enum PlayerEnum {
 
+    P1(1),
     P2(2),
     P3(3),
     P4(4);

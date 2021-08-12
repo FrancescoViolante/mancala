@@ -16,8 +16,8 @@ import java.util.List;
 @Service
 public class GameService {
 
-    private static final int POSITION_TO_ADD = 7;
-    private static final int STONES = 6;
+    public static final int POSITION_TO_ADD = 7;
+    public static final int STONES = 6;
     private GameRepo gameRepo;
     private PitRepo pitRepo;
 
@@ -42,7 +42,7 @@ public class GameService {
             pits.add(Pit.builder()
                     .stones(STONES)
                     .position(i)
-                  //  .game(game)
+                    //  .game(game)
                     .build());
         }
         calculateBigPit(pits, pitNumber);
@@ -76,6 +76,7 @@ public class GameService {
     public void setGameRepo(GameRepo gameRepo) {
         this.gameRepo = gameRepo;
     }
+
     @Autowired
     public void setPitRepo(bol.mancala.repositories.PitRepo pitRepo) {
         this.pitRepo = pitRepo;
