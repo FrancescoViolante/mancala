@@ -13,7 +13,7 @@ import java.util.LinkedList;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class Board {
+public class BoardDto {
 
 
     private LinkedList<Pit> situation;
