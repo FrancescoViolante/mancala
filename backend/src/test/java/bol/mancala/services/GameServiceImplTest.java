@@ -5,7 +5,6 @@ import bol.mancala.expectedResults.ExpGame;
 import bol.mancala.model.Game;
 import bol.mancala.model.Pit;
 import bol.mancala.repositories.GameRepo;
-import bol.mancala.repositories.PitRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -28,21 +27,20 @@ class GameServiceImplTest {
     private GameServiceImpl gameServiceImpl;
 
     @Mock
-    private PitRepo pitRepo;
-    @Mock
     private GameRepo gameRepo;
 
     @Test
     void initializeBoard() {
 
 
-        when(gameRepo.save(any(Game.class))).thenReturn(ExpGame.createNewGame());
+        when(gameRepo.save(any(Game.class))).thenReturn(ExpGame.createNewGameWithTwoPlayers());
 
         Game game = gameServiceImpl.initializeBoard(2);
         assertAll(
                 () -> assertThat(game.getPits().size()).isEqualTo(14),
                 () -> assertThat(game.getGameId().longValue()).isEqualTo(1L),
                 () -> assertThat(game.getPlayerAmount()).isEqualTo(2),
+                () -> assertThat(game.getPlayerWhoMove()).isEqualTo(PlayerEnum.P1),
 
                 allPitsHaveSameGameId(game),
                 firstPositionInTwoPlayerGameIsZero(game),

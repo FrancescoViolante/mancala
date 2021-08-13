@@ -54,10 +54,10 @@ class GameControllerTest {
     @Test
     void createGame() throws Exception {
 
-        String jsonInString = objectMapper.writeValueAsString(ExpGame.createNewGame());
+        String jsonInString = objectMapper.writeValueAsString(ExpGame.createNewGameWithTwoPlayers());
 
 
-        when(gameService.initializeBoard(2)).thenReturn(ExpGame.createNewGame());
+        when(gameService.initializeBoard(2)).thenReturn(ExpGame.createNewGameWithTwoPlayers());
         mockMvc.perform(get(URI + "/new-game")).andExpect(status().isOk())
                 .andExpect(content().json(jsonInString))
                 .andDo(print());

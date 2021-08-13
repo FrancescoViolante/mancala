@@ -5,7 +5,6 @@ import bol.mancala.dto.enums.PlayerEnum;
 import bol.mancala.model.Game;
 import bol.mancala.model.Pit;
 import bol.mancala.repositories.GameRepo;
-import bol.mancala.repositories.PitRepo;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +15,7 @@ import java.util.*;
 @Service
 public class GameServiceImpl implements GameService {
 
-    public static final int POSITION_TO_ADD = 7;
-    public static final int INITIAL_STONES_PIT = 6;
-    public static final int INITIAL_STONES_BIGPIT = 0;
-    public static final int FIRST_PLAYER = 1;
     private GameRepo gameRepo;
-    private PitRepo pitRepo;
 
     public Game initializeBoard(int playerAmount) {
 
@@ -37,6 +31,17 @@ public class GameServiceImpl implements GameService {
 
     }
 
+
+    public Game moveStones(MovePitRequestModel movePitRequestModel) {
+
+        Optional<Game> retrievedGame = gameRepo.findById(movePitRequestModel.getGameId());
+
+        checkGameIdProvided(retrievedGame);
+        checkClickedPosition(retrievedGame.get(), movePitRequestModel.getPositionClicked());
+
+        return null;
+    }
+
     private PlayerEnum calculatePlayerWhoStart(int playerAmount) {
         int randomPlayerEnumValue = new Random().ints(FIRST_PLAYER, playerAmount)
                 .findFirst().orElse(1);
@@ -44,36 +49,24 @@ public class GameServiceImpl implements GameService {
         return PlayerEnum.getPlayerEnumByValue(randomPlayerEnumValue);
     }
 
-    public Game moveStones(MovePitRequestModel movePitRequestModel) {
+    private void checkClickedPosition(Game game, Integer positionClicked) {
 
-      /*  Optional<Game> retrivedGame = gameRepo.findById(movePitRequestModel.getGameId());
+        long positionProvidedOccurrenciesInGame = game.getPits().stream()
+                .map(Pit::getPosition)
+                .filter(position -> position.equals(positionClicked))
+                .count();
 
-        checkGameIdProvided(retrivedGame);
-        Game game = retrivedGame.isPresent() : retrivedGame.get();
-        checkClickedPosition();*/
-        return null;
+        if (positionProvidedOccurrenciesInGame != POSITION_CLICKED_IS_PRESENT)
+            throw new IllegalArgumentException("Invalid position clicked.");
+
     }
 
-    private void checkClickedPosition(Optional<Game> retrivedGame) {
-
-     /*   if(retrivedGame.get()){
-            throw  new IllegalArgumentException("Game not present in DB.");
-        }*/
-    }
 
     private void checkGameIdProvided(Optional<Game> retrivedGame) {
-/*
-        retrivedGame.ifPresent(
-                (game) ->   game)
-        ()-> throw  new IllegalArgumentException("Game not present in DB."));
-
-
-        ); ? throw  new IllegalArgumentException("Game not present in DB.") :
-        if(retrivedGame.isEmpty()){
-            throw  new IllegalArgumentException("Game not present in DB.");
-        }*/
-
+        if (retrivedGame.isEmpty())
+            throw new IllegalArgumentException("Game not present in DB.");
     }
+
 
     private LinkedList<Pit> createPits(int playerAmount) {
 
@@ -101,9 +94,9 @@ public class GameServiceImpl implements GameService {
 
     private void calculateBigPit(LinkedList<Pit> pits, int pitNumber) {
 
-        List<Integer> bigPitPositions = new java.util.ArrayList<>(Collections.singletonList(6));
+        List<Integer> bigPitPositions = new java.util.ArrayList<>(Collections.singletonList(FIRT_BIGPIT_POSITION));
         int j = 6;
-        while (j < pitNumber - 1) {
+        while (j < pitValueStartingFromZero(pitNumber)) {
             j += POSITION_TO_ADD;
             bigPitPositions.add(j);
         }
@@ -116,13 +109,13 @@ public class GameServiceImpl implements GameService {
                 });
     }
 
+    private int pitValueStartingFromZero(int pitNumber) {
+        return pitNumber - 1;
+    }
+
     @Autowired
     public void setGameRepo(GameRepo gameRepo) {
         this.gameRepo = gameRepo;
     }
 
-    @Autowired
-    public void setPitRepo(bol.mancala.repositories.PitRepo pitRepo) {
-        this.pitRepo = pitRepo;
-    }
 }
