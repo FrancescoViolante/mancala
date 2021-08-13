@@ -1,6 +1,7 @@
 package bol.mancala.model;
 
 
+import bol.mancala.dto.enums.PlayerEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
@@ -26,9 +27,11 @@ public class Game implements Serializable {
 
     private int playerAmount;
 
+    @Column(name = "playerWhoMove")
+    @Enumerated(EnumType.STRING)
+    private PlayerEnum playerWhoMove;
+
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Pit> pits = new ArrayList<>();
-
-
 
 }

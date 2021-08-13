@@ -1,6 +1,7 @@
 package bol.mancala.services;
 
 import bol.mancala.dto.MovePitRequestModel;
+import bol.mancala.dto.enums.PlayerEnum;
 import bol.mancala.model.Game;
 import bol.mancala.model.Pit;
 import bol.mancala.repositories.GameRepo;
@@ -9,18 +10,16 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Log4j2
 @Service
 public class GameServiceImpl implements GameService {
 
     public static final int POSITION_TO_ADD = 7;
-    public static final int INITIAL_STONES = 6;
+    public static final int INITIAL_STONES_PIT = 6;
     public static final int INITIAL_STONES_BIGPIT = 0;
+    public static final int FIRST_PLAYER = 1;
     private GameRepo gameRepo;
     private PitRepo pitRepo;
 
@@ -28,13 +27,21 @@ public class GameServiceImpl implements GameService {
 
 
         List<Pit> pits = createPits(playerAmount);
-        Game game = Game.builder().playerAmount(playerAmount).pits(pits).build();
-        pits.forEach(pit -> pit.setGame(game));
-        Game game2 = gameRepo.save(game);
+        Game game = Game.builder().playerAmount(playerAmount)
+                .playerWhoMove(calculatePlayerWhoStart(playerAmount))
+                .pits(pits).build();
 
-        log.info(pitRepo.findAllByGame_GameId(game2.getGameId()));
-        log.info(game2);
-        return game2;
+
+        pits.forEach(pit -> pit.setGame(game));
+        return gameRepo.save(game);
+
+    }
+
+    private PlayerEnum calculatePlayerWhoStart(int playerAmount) {
+        int randomPlayerEnumValue = new Random().ints(FIRST_PLAYER, playerAmount)
+                .findFirst().orElse(1);
+
+        return PlayerEnum.getPlayerEnumByValue(randomPlayerEnumValue);
     }
 
     public Game moveStones(MovePitRequestModel movePitRequestModel) {
@@ -74,7 +81,7 @@ public class GameServiceImpl implements GameService {
         LinkedList<Pit> pits = new LinkedList<>();
         for (int i = 0; i < pitNumber; i++) {
             pits.add(Pit.builder()
-                    .stones(INITIAL_STONES)
+                    .stones(INITIAL_STONES_PIT)
                     .position(i)
                     //  .game(game)
                     .build());

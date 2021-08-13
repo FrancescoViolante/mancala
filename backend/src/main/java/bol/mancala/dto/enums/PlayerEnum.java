@@ -19,7 +19,7 @@ public enum PlayerEnum {
         return value;
     }
 
-    public PlayerEnum getPlayerEnumByValue(final int value) {
+    public static PlayerEnum getPlayerEnumByValue(final int value) {
 
         return Arrays.stream(PlayerEnum.values())
                 .filter(playerEnum -> playerEnum.getValue() == value)

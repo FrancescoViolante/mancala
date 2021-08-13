@@ -1,9 +1,12 @@
 create schema if not exists mancala;
+
 CREATE TABLE if not exists mancala.GAME
 (
-    gameId       LONG AUTO_INCREMENT PRIMARY KEY,
-    playerAmount INT(1) NOT NULL
+    gameId        LONG AUTO_INCREMENT PRIMARY KEY,
+    playerAmount  INT(1) NOT NULL,
+    playerWhoMove varchar(2)
 );
+
 
 CREATE TABLE if not exists mancala.PIT
 (
@@ -12,15 +15,8 @@ CREATE TABLE if not exists mancala.PIT
     position INT(1)  NOT NULL,
     stones   INT(2)  NOT NULL,
     bigPit   boolean NOT NULL,
-    player   varchar,
+    player   varchar(2),
     gameId   LONG,
     foreign key (gameId) references GAME (gameId)
 );
-/*
-CREATE TABLE PLAYER
-(
-    playerId LONG AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(50) NOT NULL
-);*/
 
