@@ -6,7 +6,6 @@ import bol.mancala.model.Game;
 import bol.mancala.model.Pit;
 import bol.mancala.repositories.GameRepo;
 import bol.mancala.repositories.PitRepo;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -23,10 +22,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GameServiceTest {
+class GameServiceImplTest {
 
     @InjectMocks
-    private GameService gameService;
+    private GameServiceImpl gameServiceImpl;
 
     @Mock
     private PitRepo pitRepo;
@@ -39,7 +38,7 @@ class GameServiceTest {
 
         when(gameRepo.save(any(Game.class))).thenReturn(ExpGame.createNewGame());
 
-        Game game = gameService.initializeBoard(2);
+        Game game = gameServiceImpl.initializeBoard(2);
         assertAll(
                 () -> assertThat(game.getPits().size()).isEqualTo(14),
                 () -> assertThat(game.getGameId().longValue()).isEqualTo(1L),
@@ -51,6 +50,12 @@ class GameServiceTest {
                 playerPresentAreP1AndP2(game),
                 stoneInitialValueIs6(game)
         );
+    }
+
+    @Test
+    void moveStones() {
+
+
     }
 
     private Executable allPitsHaveSameGameId(Game game) {
@@ -79,5 +84,6 @@ class GameServiceTest {
         return () ->
                 assertThat(game.getPits().stream().map(Pit::getStones).allMatch(stones -> stones == 6));
     }
+
 
 }

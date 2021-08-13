@@ -1,13 +1,16 @@
 package bol.mancala.controllers;
 
 
+import bol.mancala.dto.MovePitRequestModel;
 import bol.mancala.model.Game;
 import bol.mancala.services.GameService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
 
 @Log4j2
 @RestController
@@ -33,8 +36,20 @@ public class GameController {
 
     }
 
+    @PostMapping("/move-stones")
+    public ResponseEntity<String> moveStones(@Valid @RequestBody MovePitRequestModel movePitRequestModel) {
+
+        MovePitRequestModel m = new MovePitRequestModel();
+        m.setGameId(1L);
+        m.setPlayerWhoMoved("P1");
+        m.setPositionClicked(4);
+
+        return ResponseEntity.ok("you did it");
+
+    }
+
     @Autowired
-    public void setGameService(GameService gameService) {
-        this.gameService = gameService;
+    public void setGameService(GameService gameServiceImpl) {
+        this.gameService = gameServiceImpl;
     }
 }

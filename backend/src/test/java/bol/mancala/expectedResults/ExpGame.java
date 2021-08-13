@@ -21,7 +21,7 @@ public class ExpGame {
                 Pit.builder().stones(6).bigPit(false).position(3).player(PlayerEnum.P1).build(),
                 Pit.builder().stones(6).bigPit(false).position(4).player(PlayerEnum.P1).build(),
                 Pit.builder().stones(6).bigPit(false).position(5).player(PlayerEnum.P1).build(),
-                Pit.builder().stones(6).bigPit(true).position(6).player(PlayerEnum.P1).build()
+                Pit.builder().stones(0).bigPit(true).position(6).player(PlayerEnum.P1).build()
         );
 
       /*  List<Pit> pitsPlayer2 =   List.copyOf(pitsPlayer1);
@@ -38,7 +38,7 @@ public class ExpGame {
                 Pit.builder().stones(6).bigPit(false).position(10).player(PlayerEnum.P2).build(),
                 Pit.builder().stones(6).bigPit(false).position(11).player(PlayerEnum.P2).build(),
                 Pit.builder().stones(6).bigPit(false).position(12).player(PlayerEnum.P2).build(),
-                Pit.builder().stones(6).bigPit(true).position(13).player(PlayerEnum.P2).build()
+                Pit.builder().stones(0).bigPit(true).position(13).player(PlayerEnum.P2).build()
         );
 
         Game game = Game.builder().playerAmount(2).gameId(1L)
