@@ -14,7 +14,7 @@ import javax.validation.Valid;
 
 @Log4j2
 @RestController
-@RequestMapping("actions")
+@RequestMapping("mancala")
 public class GameController {
 
 
@@ -22,16 +22,18 @@ public class GameController {
 
 
     @GetMapping("/new-game")
-    public Game createGame() {
+    public ResponseEntity<Game> createGame() {
 
-        return gameService.initializeBoard(2);
-
+        Game gameToSave = gameService.initializeBoard(2);
+        Game gameToSave2 =  gameService.saveOrUpdateGameInDataBase(gameToSave);
+        return  ResponseEntity.ok(gameToSave2);
     }
 
     @PostMapping("/move-stones")
     public ResponseEntity<Game> moveStones(@Valid @RequestBody MovePitRequestModel movePitRequestModel) {
 
-        return ResponseEntity.ok(gameService.moveStones(movePitRequestModel));
+        Game gameToUpdate = gameService.moveStones(movePitRequestModel);
+        return ResponseEntity.ok(gameService.saveOrUpdateGameInDataBase(gameToUpdate));
 
     }
 

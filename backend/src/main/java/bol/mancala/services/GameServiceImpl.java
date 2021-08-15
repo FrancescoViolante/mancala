@@ -26,7 +26,8 @@ public class GameServiceImpl implements GameService {
                 .pits(pits).build();
 
         pits.forEach(pit -> pit.setGame(game));
-        return saveOrupdateGameInDataBase(game);
+        GameUtil.calculatePlayerEnum(new LinkedList<>(pits));
+        return game;
 
     }
 
@@ -47,10 +48,10 @@ public class GameServiceImpl implements GameService {
         updateNextPositionStones(game, movePitRequestModel, pitClickedPredicate);
 
 
-        return saveOrupdateGameInDataBase(game);
+        return game;
     }
 
-    private Game saveOrupdateGameInDataBase(Game game) {
+    public Game saveOrUpdateGameInDataBase(Game game) {
         return gameRepo.save(game);
     }
 
@@ -73,13 +74,15 @@ public class GameServiceImpl implements GameService {
         Pit clickedPit = calculatePitClicked(game, pitClickedPredicate);
 
         LinkedList<Pit> orderedPits = ricreatePitListStartingFromPositionInInput(game.getPits(), pitClickedPredicate);
+        final int stoneInClickedPit = clickedPit.getStones();
 
         //SIMULIAMO SIANO 20
         //valueOfStonesPresentInClickedPit = 21;
 
         int i = 0;
+
         int positionNextElementToUpdate = orderedPits.element().getPositionNextElement();
-        while (i < clickedPit.getStones()) {
+        while (i < stoneInClickedPit) {
 
             int finalPositionNextElementToUpdate = positionNextElementToUpdate;
             Pit pitToUpdate = orderedPits.stream().filter(e -> e.getPosition() == finalPositionNextElementToUpdate).findFirst().get();
@@ -94,23 +97,25 @@ public class GameServiceImpl implements GameService {
 
 
             i++;
+            if(isLastPitToUpdated(clickedPit, i)){
+                calculateNextPlayerWhoMove(game, movePitRequestModel, clickedPit, i, pitToUpdate);
+            }
 
-
-            calculateNextPlayerWhoMove(game, movePitRequestModel, clickedPit, i, pitToUpdate);
         }
-
         updateClickedStonesToZero(clickedPit);
-
     }
 
     private void calculateNextPlayerWhoMove(Game game, MovePitRequestModel movePitRequestModel, Pit clickedPit, int i, Pit pitToUpdate) {
-        if (i == clickedPit.getStones() - 1
-                && pitToUpdate.getPlayer() == movePitRequestModel.getPlayerWhoMoved()
+        if (pitToUpdate.getPlayer() == movePitRequestModel.getPlayerWhoMoved()
                 && pitToUpdate.isBigPit()) {
             game.setPlayerWhoMove(movePitRequestModel.getPlayerWhoMoved());
         } else {
             game.setPlayerWhoMove(PlayerEnum.getNextPlayerEnum(game.getPlayerAmount(), game.getPlayerWhoMove()));
         }
+    }
+
+    private boolean isLastPitToUpdated(Pit clickedPit, int i) {
+        return i == clickedPit.getStones() - 1;
     }
 
     private void incrementStoneNextPitByOne(Pit pitToUpdate) {
@@ -141,7 +146,7 @@ public class GameServiceImpl implements GameService {
 
 
     private PlayerEnum calculatePlayerWhoStart(int playerAmount) {
-        int randomPlayerEnumValue = new Random().ints(FIRST_PLAYER, playerAmount)
+        int randomPlayerEnumValue = new Random().ints(FIRST_PLAYER, playerAmount+1)
                 .findFirst().orElse(1);
 
         return PlayerEnum.getPlayerEnumByValue(randomPlayerEnumValue);

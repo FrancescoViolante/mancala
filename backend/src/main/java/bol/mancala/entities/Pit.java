@@ -2,13 +2,15 @@ package bol.mancala.entities;
 
 import bol.mancala.dto.enums.PlayerEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @NoArgsConstructor
@@ -18,7 +20,6 @@ import java.io.Serializable;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "pitId")
 @EqualsAndHashCode(exclude = "game")
-@ToString(exclude = "game")
 public class Pit implements Serializable {
 
 
@@ -40,12 +41,15 @@ public class Pit implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_gameId")
+    @JsonIgnore
     private Game game;
 
     @Transient
+    @JsonIgnore
     int positionNextElement;
 
     @Transient
+    @JsonIgnore
     Boolean updatablePit;
 
 }

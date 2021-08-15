@@ -18,4 +18,6 @@ public interface GameService {
     Game initializeBoard(int playerAmount);
 
     Game moveStones(MovePitRequestModel movePitRequestModel);
+
+     Game saveOrUpdateGameInDataBase(Game game);
 }

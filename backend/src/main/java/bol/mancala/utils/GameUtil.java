@@ -1,6 +1,8 @@
 package bol.mancala.utils;
 
+import bol.mancala.dto.enums.PlayerEnum;
 import bol.mancala.entities.Pit;
+import bol.mancala.services.GameService;
 
 import java.util.LinkedList;
 
@@ -18,5 +20,17 @@ public class GameUtil {
                         element.setPositionNextElement(0);
                 }
         );
+    }
+
+    public static  void calculatePlayerEnum(LinkedList<Pit> pits) {
+        pits.forEach(pit -> {
+            if (pit.getPosition() == 0) {
+                pit.setPlayer(PlayerEnum.P1);
+            } else {
+                int player = pit.getPosition() / GameService.POSITION_TO_ADD + 1;
+                pit.setPlayer(PlayerEnum.getPlayerEnumByValue(player));
+            }
+        });
+
     }
 }
