@@ -5,8 +5,8 @@ import bol.mancala.dto.enums.PlayerEnum;
 import bol.mancala.model.Game;
 import bol.mancala.model.Pit;
 import bol.mancala.repositories.GameRepo;
+import bol.mancala.utils.GameUtil;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 @Service
 public class GameServiceImpl implements GameService {
 
-    private GameRepo gameRepo;
+    private final GameRepo gameRepo;
 
     public Game initializeBoard(int playerAmount) {
 
@@ -39,14 +39,14 @@ public class GameServiceImpl implements GameService {
 
         Game game = retrievedGame.get();
         checkClickedPosition(game, movePitRequestModel.getPositionClicked());
-        setAfterPitId(new LinkedList<>(game.getPits()));
+        GameUtil.setAfterPitId(new LinkedList<>(game.getPits()));
 
         //0 is not possible because is not clickable in FE
         Predicate<Pit> pitClickedPredicate = pit -> pit.getPosition() == movePitRequestModel.getPositionClicked();
 
         setNotUpdatablePits(new LinkedList<>(game.getPits()), movePitRequestModel, pitClickedPredicate);
         updateNextPositionStones(game, movePitRequestModel, pitClickedPredicate);
-        return null;
+        return game;
     }
 
     private void setNotUpdatablePits(LinkedList<Pit> pits, MovePitRequestModel movePitRequestModel, Predicate<Pit> pitClickedPredicate) {
@@ -65,19 +65,6 @@ public class GameServiceImpl implements GameService {
         });
     }
 
-    private void setAfterPitId(LinkedList<Pit> pits) {
-        Pit lastPit = pits.peekLast();
-
-        pits.forEach(
-                (element) -> {
-                    if (!element.equals(lastPit))
-                        element.setPositionNextElement(pits.indexOf(element) + 1);
-                    else
-                        element.setPositionNextElement(0);
-                }
-        );
-    }
-
     private void updateNextPositionStones(Game game, MovePitRequestModel movePitRequestModel, Predicate<Pit> pitClickedPredicate) {
 
 
@@ -86,7 +73,7 @@ public class GameServiceImpl implements GameService {
 
         int valueOfStonesPresentInClickedPit = clickedPit.getStones();
 
-        LinkedList<Pit> orderedPits = ricreatePitListStartingFromPositionInInput(game.getPits(), movePitRequestModel.getPositionClicked(), pitClickedPredicate);
+        LinkedList<Pit> orderedPits = ricreatePitListStartingFromPositionInInput(game.getPits(), pitClickedPredicate);
 
         //SIMULIAMO SIANO 20
         //valueOfStonesPresentInClickedPit = 21;
@@ -102,7 +89,7 @@ public class GameServiceImpl implements GameService {
 
             Predicate<Pit> nextPositionPredicate = pit -> pit.getPosition() == pitToUpdate.getPositionNextElement();
 
-            positionNextElementToUpdate = ricreatePitListStartingFromPositionInInput(orderedPits, pitToUpdate.getPositionNextElement(), nextPositionPredicate)
+            positionNextElementToUpdate = ricreatePitListStartingFromPositionInInput(orderedPits, nextPositionPredicate)
                                         .stream().filter(Pit::getUpdatablePit)
                                         .findFirst().get().getPosition();
 
@@ -117,7 +104,7 @@ public class GameServiceImpl implements GameService {
         clickedPit.setStones(0);
     }
 
-    private LinkedList<Pit> ricreatePitListStartingFromPositionInInput(List<Pit> pits, Integer positionClicked, Predicate<Pit> pitClickedPredicate) {
+    private LinkedList<Pit> ricreatePitListStartingFromPositionInInput(List<Pit> pits, Predicate<Pit> pitClickedPredicate) {
         Pit positionOfElementClicked = pits.stream().filter(pitClickedPredicate).findFirst().get();
         LinkedList<Pit> orderedListByPositionInInput = new LinkedList<>();
         List<Pit> pitWithPositionMinorOfClickedPosition = pits.subList(INITIAL_POSITION, pits.indexOf(positionOfElementClicked));
@@ -196,9 +183,8 @@ public class GameServiceImpl implements GameService {
         return pitNumber - 1;
     }
 
-    @Autowired
-    public void setGameRepo(GameRepo gameRepo) {
+
+    public GameServiceImpl(GameRepo gameRepo) {
         this.gameRepo = gameRepo;
     }
-
 }

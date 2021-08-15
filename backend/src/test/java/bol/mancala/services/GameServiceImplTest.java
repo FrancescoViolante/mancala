@@ -7,21 +7,24 @@ import bol.mancala.expected.results.GameRes;
 import bol.mancala.model.Game;
 import bol.mancala.model.Pit;
 import bol.mancala.repositories.GameRepo;
+import bol.mancala.utils.GameUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -58,14 +61,12 @@ class GameServiceImplTest {
 
 
     @Test
-    void moveStones() {
+    void moveStonesFirstTurnClickOnPosition4() {
         when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createNewGameWithTwoPlayers()));
 
         Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModel());
 
-
-
-        assertNull(game);
+        assertEquals(game, GameRes.gameWithTwoPlayersClickOnPositionFourFirstTournExpected());
     }
 
     @Test
