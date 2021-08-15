@@ -1,6 +1,6 @@
 package bol.mancala.repositories;
 
-import bol.mancala.model.Pit;
+import bol.mancala.entities.Pit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

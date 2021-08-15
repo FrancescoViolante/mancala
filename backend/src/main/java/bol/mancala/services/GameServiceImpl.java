@@ -2,8 +2,8 @@ package bol.mancala.services;
 
 import bol.mancala.dto.MovePitRequestModel;
 import bol.mancala.dto.enums.PlayerEnum;
-import bol.mancala.model.Game;
-import bol.mancala.model.Pit;
+import bol.mancala.entities.Game;
+import bol.mancala.entities.Pit;
 import bol.mancala.repositories.GameRepo;
 import bol.mancala.utils.GameUtil;
 import org.springframework.stereotype.Service;

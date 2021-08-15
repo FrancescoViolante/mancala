@@ -2,7 +2,7 @@ package bol.mancala.controllers;
 
 
 import bol.mancala.dto.MovePitRequestModel;
-import bol.mancala.model.Game;
+import bol.mancala.entities.Game;
 import bol.mancala.services.GameService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

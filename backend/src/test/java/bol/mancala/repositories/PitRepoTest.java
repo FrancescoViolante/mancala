@@ -1,9 +1,8 @@
 package bol.mancala.repositories;
 
 import bol.mancala.dto.enums.PlayerEnum;
-import bol.mancala.model.Game;
-import bol.mancala.model.Pit;
-import org.junit.jupiter.api.BeforeEach;
+import bol.mancala.entities.Game;
+import bol.mancala.entities.Pit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

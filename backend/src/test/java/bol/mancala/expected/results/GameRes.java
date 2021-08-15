@@ -1,8 +1,8 @@
 package bol.mancala.expected.results;
 
 import bol.mancala.dto.enums.PlayerEnum;
-import bol.mancala.model.Game;
-import bol.mancala.model.Pit;
+import bol.mancala.entities.Game;
+import bol.mancala.entities.Pit;
 import bol.mancala.utils.GameUtil;
 
 import java.util.ArrayList;

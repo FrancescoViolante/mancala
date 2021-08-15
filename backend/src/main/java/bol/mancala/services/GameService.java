@@ -1,7 +1,7 @@
 package bol.mancala.services;
 
 import bol.mancala.dto.MovePitRequestModel;
-import bol.mancala.model.Game;
+import bol.mancala.entities.Game;
 
 public interface GameService {
 

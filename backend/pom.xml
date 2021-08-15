@@ -18,6 +18,7 @@
         <java-version>11</java-version>
         <frontend-bundle-dir>${project.parent.basedir}/frontend/dist/frontend/</frontend-bundle-dir>
         <start-class>com.github.diegohordi.backend.ApplicationBootstrap</start-class>
+        <folder-typescript-file>${project.parent.basedir}/frontend/mancala/rest.d.ts</folder-typescript-file>
     </properties>
     <dependencies>
         <dependency>
@@ -106,13 +107,13 @@
                             <classPatterns>
                                 <pattern>bol.mancala.dto.*Dto</pattern>
                                 <pattern>bol.mancala.dto.enums.*Enum</pattern>
-                                <pattern>bol.mancala.dto.*Model</pattern>
+                                <pattern>bol.mancala.entities.*</pattern>
                             </classPatterns>
                            <excludeClasses>
                                 <class>java.io.Serializable</class>
                             </excludeClasses>
                             <outputFile>
-                                ${project.build.directory}/generated-sources/typescript/rest.d.ts
+                                ${folder-typescript-file}
                             </outputFile>
                             <outputKind>global</outputKind>
                         </configuration>

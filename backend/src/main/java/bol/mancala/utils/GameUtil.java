@@ -1,6 +1,6 @@
 package bol.mancala.utils;
 
-import bol.mancala.model.Pit;
+import bol.mancala.entities.Pit;
 
 import java.util.LinkedList;
 

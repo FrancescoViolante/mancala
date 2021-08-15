@@ -1,7 +1,7 @@
 package bol.mancala.utils;
 
 import bol.mancala.expected.results.GameRes;
-import bol.mancala.model.Pit;
+import bol.mancala.entities.Pit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;

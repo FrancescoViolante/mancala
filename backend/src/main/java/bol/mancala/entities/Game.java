@@ -1,4 +1,4 @@
-package bol.mancala.model;
+package bol.mancala.entities;
 
 
 import bol.mancala.dto.enums.PlayerEnum;
