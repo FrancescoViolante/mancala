@@ -1,6 +1,8 @@
 package bol.mancala.dto.enums;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public enum PlayerEnum {
 
@@ -25,5 +27,16 @@ public enum PlayerEnum {
                 .filter(playerEnum -> playerEnum.getValue() == value)
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public static PlayerEnum getNextPlayerEnum(final int playerAmount, PlayerEnum playerEnumMoving) {
+
+        List<PlayerEnum> playerEnumInGameSet = Arrays.stream(PlayerEnum.values())
+                .limit(playerAmount).collect(Collectors.toUnmodifiableList());
+
+        if (playerEnumInGameSet.get(playerEnumInGameSet.indexOf(playerEnumMoving)).getValue() == playerEnumInGameSet.size())
+            return PlayerEnum.P1;
+        else return getPlayerEnumByValue(playerEnumMoving.getValue() + 1);
+
     }
 }

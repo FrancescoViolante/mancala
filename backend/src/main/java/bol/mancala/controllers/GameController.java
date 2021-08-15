@@ -21,14 +21,6 @@ public class GameController {
     private GameService gameService;
 
 
-    @GetMapping("/hello")
-    public void hello() {
-
-        log.info("Hi");
-
-    }
-
-
     @GetMapping("/new-game")
     public Game createGame() {
 
@@ -37,10 +29,9 @@ public class GameController {
     }
 
     @PostMapping("/move-stones")
-    public ResponseEntity<String> moveStones(@Valid @RequestBody MovePitRequestModel movePitRequestModel) {
+    public ResponseEntity<Game> moveStones(@Valid @RequestBody MovePitRequestModel movePitRequestModel) {
 
-
-        return ResponseEntity.ok("you did it");
+        return ResponseEntity.ok(gameService.moveStones(movePitRequestModel));
 
     }
 

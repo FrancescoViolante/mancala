@@ -6,13 +6,12 @@ import bol.mancala.model.Game;
 import bol.mancala.model.Pit;
 import bol.mancala.repositories.GameRepo;
 import bol.mancala.utils.GameUtil;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.function.Predicate;
 
-@Log4j2
+
 @Service
 public class GameServiceImpl implements GameService {
 
@@ -27,7 +26,7 @@ public class GameServiceImpl implements GameService {
                 .pits(pits).build();
 
         pits.forEach(pit -> pit.setGame(game));
-        return gameRepo.save(game);
+        return saveOrupdateGameInDataBase(game);
 
     }
 
@@ -46,7 +45,13 @@ public class GameServiceImpl implements GameService {
 
         setNotUpdatablePits(new LinkedList<>(game.getPits()), movePitRequestModel, pitClickedPredicate);
         updateNextPositionStones(game, movePitRequestModel, pitClickedPredicate);
-        return game;
+
+
+        return saveOrupdateGameInDataBase(game);
+    }
+
+    private Game saveOrupdateGameInDataBase(Game game) {
+        return gameRepo.save(game);
     }
 
     private void setNotUpdatablePits(LinkedList<Pit> pits, MovePitRequestModel movePitRequestModel, Predicate<Pit> pitClickedPredicate) {
@@ -58,20 +63,14 @@ public class GameServiceImpl implements GameService {
 
 
         pits.forEach(pit -> {
-            if (pitClickedPredicate.test(pit) || bigPitsOfOtherPlayerPredicate.test(pit)) {
-                pit.setUpdatablePit(false);
-            } else
-                pit.setUpdatablePit(true);
+            pit.setUpdatablePit(!pitClickedPredicate.test(pit) && !bigPitsOfOtherPlayerPredicate.test(pit));
         });
     }
 
     private void updateNextPositionStones(Game game, MovePitRequestModel movePitRequestModel, Predicate<Pit> pitClickedPredicate) {
 
 
-        Pit clickedPit =game.getPits().stream()
-                .filter(pitClickedPredicate).findFirst().orElseThrow();
-
-        int valueOfStonesPresentInClickedPit = clickedPit.getStones();
+        Pit clickedPit = calculatePitClicked(game, pitClickedPredicate);
 
         LinkedList<Pit> orderedPits = ricreatePitListStartingFromPositionInInput(game.getPits(), pitClickedPredicate);
 
@@ -80,24 +79,47 @@ public class GameServiceImpl implements GameService {
 
         int i = 0;
         int positionNextElementToUpdate = orderedPits.element().getPositionNextElement();
-        while (i < valueOfStonesPresentInClickedPit) {
+        while (i < clickedPit.getStones()) {
 
             int finalPositionNextElementToUpdate = positionNextElementToUpdate;
             Pit pitToUpdate = orderedPits.stream().filter(e -> e.getPosition() == finalPositionNextElementToUpdate).findFirst().get();
 
-            pitToUpdate.setStones(Integer.sum(pitToUpdate.getStones(), INCREMENT_STONE));
+            incrementStoneNextPitByOne(pitToUpdate);
 
             Predicate<Pit> nextPositionPredicate = pit -> pit.getPosition() == pitToUpdate.getPositionNextElement();
 
             positionNextElementToUpdate = ricreatePitListStartingFromPositionInInput(orderedPits, nextPositionPredicate)
-                                        .stream().filter(Pit::getUpdatablePit)
-                                        .findFirst().get().getPosition();
+                    .stream().filter(Pit::getUpdatablePit)
+                    .findFirst().get().getPosition();
+
 
             i++;
+
+
+            calculateNextPlayerWhoMove(game, movePitRequestModel, clickedPit, i, pitToUpdate);
         }
 
         updateClickedStonesToZero(clickedPit);
 
+    }
+
+    private void calculateNextPlayerWhoMove(Game game, MovePitRequestModel movePitRequestModel, Pit clickedPit, int i, Pit pitToUpdate) {
+        if (i == clickedPit.getStones() - 1
+                && pitToUpdate.getPlayer() == movePitRequestModel.getPlayerWhoMoved()
+                && pitToUpdate.isBigPit()) {
+            game.setPlayerWhoMove(movePitRequestModel.getPlayerWhoMoved());
+        } else {
+            game.setPlayerWhoMove(PlayerEnum.getNextPlayerEnum(game.getPlayerAmount(), game.getPlayerWhoMove()));
+        }
+    }
+
+    private void incrementStoneNextPitByOne(Pit pitToUpdate) {
+        pitToUpdate.setStones(Integer.sum(pitToUpdate.getStones(), INCREMENT_STONE));
+    }
+
+    private Pit calculatePitClicked(Game game, Predicate<Pit> pitClickedPredicate) {
+        return game.getPits().stream()
+                .filter(pitClickedPredicate).findFirst().orElseThrow();
     }
 
     private void updateClickedStonesToZero(Pit clickedPit) {

@@ -63,6 +63,7 @@ class GameServiceImplTest {
     @Test
     void moveStonesFirstTurnClickOnPosition4() {
         when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createNewGameWithTwoPlayers()));
+        when(gameRepo.save(any(Game.class))).thenReturn(GameRes.gameWithTwoPlayersClickOnPositionFourFirstTournExpected());
 
         Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModel());
 

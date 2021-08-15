@@ -60,6 +60,8 @@ public class GameRes {
                 pit -> pit.setStones(7)
         );
         gameWithTwoPlayers.getPits().get(6).setStones(1);
+
+        gameWithTwoPlayers.setPlayerWhoMove(PlayerEnum.P2);
         return gameWithTwoPlayers;
     }
 
