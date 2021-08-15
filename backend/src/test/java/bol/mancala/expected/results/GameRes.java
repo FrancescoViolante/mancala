@@ -35,7 +35,7 @@ public class GameRes {
                 .build();
 
         game.getPits().forEach(pit -> pit.setGame(game));
-        GameUtil.setAfterPitId(new LinkedList<>(game.getPits()));
+        GameUtil.setNextPitPosition(new LinkedList<>(game.getPits()));
         return game;
     }
 
@@ -87,10 +87,10 @@ public class GameRes {
                 .build();
 
         game.getPits().forEach(pit -> pit.setGame(game));
-        GameUtil.setAfterPitId(new LinkedList<>(game.getPits()));
+        GameUtil.setNextPitPosition(new LinkedList<>(game.getPits()));
 
         game.getPits().get(7).setStones(1);
-
+        game.getPits().get(4).setStones(11);
         return game;
     }
 

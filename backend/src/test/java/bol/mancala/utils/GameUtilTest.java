@@ -1,21 +1,15 @@
 package bol.mancala.utils;
 
 import bol.mancala.dto.enums.PlayerEnum;
-import bol.mancala.entities.Game;
 import bol.mancala.expected.results.GameRes;
 import bol.mancala.entities.Pit;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,7 +21,7 @@ class GameUtilTest {
     @BeforeAll
     static void beforeAll() {
         try (MockedStatic<GameUtil> utilities = Mockito.mockStatic(GameUtil.class)) {
-            utilities.when(() -> GameUtil.setAfterPitId(any())).thenCallRealMethod();
+            utilities.when(() -> GameUtil.setNextPitPosition(any())).thenCallRealMethod();
             utilities.when(() -> GameUtil.calculatePlayerEnum(any())).thenCallRealMethod();
         }
         pits = new LinkedList<>(GameRes.createNewGameWithTwoPlayers().getPits());
@@ -36,7 +30,7 @@ class GameUtilTest {
     @Test
     void setAfterPitId() {
 
-        GameUtil.setAfterPitId(pits);
+        GameUtil.setNextPitPosition(pits);
 
         Assertions.assertAll(
                 () -> assertEquals(pits.get(0).getPositionNextElement(), 1),

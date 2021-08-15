@@ -9,8 +9,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Builder
 @NoArgsConstructor
@@ -20,6 +19,7 @@ import java.io.Serializable;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "pitId")
 @EqualsAndHashCode(exclude = "game")
+
 public class Pit implements Serializable {
 
 
@@ -42,6 +42,7 @@ public class Pit implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_gameId")
     @JsonIgnore
+    @ToString.Exclude
     private Game game;
 
     @Transient

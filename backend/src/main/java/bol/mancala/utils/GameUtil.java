@@ -9,7 +9,7 @@ import java.util.LinkedList;
 
 public class GameUtil {
 
-    public static void setAfterPitId(LinkedList<Pit> pits) {
+    public static void setNextPitPosition(LinkedList<Pit> pits) {
         Pit lastPit = pits.peekLast();
 
         pits.forEach(

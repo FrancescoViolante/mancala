@@ -83,7 +83,6 @@ class GameServiceImplTest {
     @Test
     void stealStonesOfOpponent() {
         when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createEndGameWithTwoPlayers()));
-        when(gameRepo.save(any(Game.class))).thenReturn(GameRes.gameWithTwoPlayersClickLastTurnExpected());
 
         Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelLastMove());
 

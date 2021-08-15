@@ -25,8 +25,7 @@ public class GameController {
     public ResponseEntity<Game> createGame() {
 
         Game gameToSave = gameService.initializeBoard(2);
-        Game gameToSave2 =  gameService.saveOrUpdateGameInDataBase(gameToSave);
-        return  ResponseEntity.ok(gameToSave2);
+        return  ResponseEntity.ok(gameService.saveOrUpdateGameInDataBase(gameToSave));
     }
 
     @PostMapping("/move-stones")
