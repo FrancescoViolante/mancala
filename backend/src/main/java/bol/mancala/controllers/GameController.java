@@ -39,10 +39,6 @@ public class GameController {
     @PostMapping("/move-stones")
     public ResponseEntity<String> moveStones(@Valid @RequestBody MovePitRequestModel movePitRequestModel) {
 
-        MovePitRequestModel m = new MovePitRequestModel();
-        m.setGameId(1L);
-        m.setPlayerWhoMoved("P1");
-        m.setPositionClicked(4);
 
         return ResponseEntity.ok("you did it");
 

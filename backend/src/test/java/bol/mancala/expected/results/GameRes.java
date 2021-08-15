@@ -1,4 +1,4 @@
-package bol.mancala.expectedResults;
+package bol.mancala.expected.results;
 
 import bol.mancala.dto.enums.PlayerEnum;
 import bol.mancala.model.Game;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class ExpGame {
+public class GameRes {
 
 
     public static Game createNewGameWithTwoPlayers() {
@@ -35,9 +35,10 @@ public class ExpGame {
     }
 
     private static void adaptBigPitValues(Pit pit) {
-        if (pit.getPosition() == 7 || pit.getPosition() == 13)
+        if (pit.getPosition() == 6 || pit.getPosition() == 13) {
             pit.setBigPit(Boolean.TRUE);
-
+            pit.setStones(0);
+        }
     }
 
     private static void calculatePlayer(Pit pit) {

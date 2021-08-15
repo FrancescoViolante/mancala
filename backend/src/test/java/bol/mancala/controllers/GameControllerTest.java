@@ -1,7 +1,7 @@
 package bol.mancala.controllers;
 
 import bol.mancala.dto.MovePitRequestModel;
-import bol.mancala.expectedResults.ExpGame;
+import bol.mancala.expected.results.GameRes;
 import bol.mancala.services.GameService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -54,10 +54,10 @@ class GameControllerTest {
     @Test
     void createGame() throws Exception {
 
-        String jsonInString = objectMapper.writeValueAsString(ExpGame.createNewGameWithTwoPlayers());
+        String jsonInString = objectMapper.writeValueAsString(GameRes.createNewGameWithTwoPlayers());
 
 
-        when(gameService.initializeBoard(2)).thenReturn(ExpGame.createNewGameWithTwoPlayers());
+        when(gameService.initializeBoard(2)).thenReturn(GameRes.createNewGameWithTwoPlayers());
         mockMvc.perform(get(URI + "/new-game")).andExpect(status().isOk())
                 .andExpect(content().json(jsonInString))
                 .andDo(print());

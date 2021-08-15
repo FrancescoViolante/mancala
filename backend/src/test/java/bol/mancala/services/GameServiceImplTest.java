@@ -1,7 +1,9 @@
 package bol.mancala.services;
 
+import bol.mancala.dto.MovePitRequestModel;
 import bol.mancala.dto.enums.PlayerEnum;
-import bol.mancala.expectedResults.ExpGame;
+import bol.mancala.expected.inputs.MovePitRequestModelImp;
+import bol.mancala.expected.results.GameRes;
 import bol.mancala.model.Game;
 import bol.mancala.model.Pit;
 import bol.mancala.repositories.GameRepo;
@@ -13,10 +15,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +38,7 @@ class GameServiceImplTest {
     void initializeBoard() {
 
 
-        when(gameRepo.save(any(Game.class))).thenReturn(ExpGame.createNewGameWithTwoPlayers());
+        when(gameRepo.save(any(Game.class))).thenReturn(GameRes.createNewGameWithTwoPlayers());
 
         Game game = gameServiceImpl.initializeBoard(2);
         assertAll(
@@ -42,6 +47,7 @@ class GameServiceImplTest {
                 () -> assertThat(game.getPlayerAmount()).isEqualTo(2),
                 () -> assertThat(game.getPlayerWhoMove()).isEqualTo(PlayerEnum.P1),
 
+                numberOfStonesInGame(game),
                 allPitsHaveSameGameId(game),
                 firstPositionInTwoPlayerGameIsZero(game),
                 lastPositionInTwoPlayerGameIs13(game),
@@ -50,10 +56,45 @@ class GameServiceImplTest {
         );
     }
 
+
     @Test
     void moveStones() {
+        when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createNewGameWithTwoPlayers()));
+
+        Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModel());
 
 
+
+        assertNull(game);
+    }
+
+    @Test
+    void moveStonesGameNotPresentInDb() {
+        when(gameRepo.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModel()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Game not present.");
+    }
+
+    @Test
+    void moveStonesInvalidPositionProvided() {
+
+        Game game = GameRes.createNewGameWithTwoPlayers();
+        MovePitRequestModel movePitRequestModel = MovePitRequestModelImp.createMovePitRequestModel();
+        game.getPits().removeIf(pit -> pit.getPosition() == movePitRequestModel.getPositionClicked());
+
+        when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(game));
+
+        assertThatThrownBy(() -> gameServiceImpl.moveStones(movePitRequestModel))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Position clicked is not present.");
+    }
+
+    private Executable numberOfStonesInGame(Game game) {
+        return () -> assertThat(game.getPits().stream()
+                .mapToInt(Pit::getStones)
+                .reduce(Integer::sum).getAsInt()).isEqualTo(72);
     }
 
     private Executable allPitsHaveSameGameId(Game game) {
@@ -82,6 +123,5 @@ class GameServiceImplTest {
         return () ->
                 assertThat(game.getPits().stream().map(Pit::getStones).allMatch(stones -> stones == 6));
     }
-
 
 }

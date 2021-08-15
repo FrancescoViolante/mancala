@@ -41,4 +41,11 @@ public class Pit implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "game_gameId")
     private Game game;
+
+    @Transient
+    int positionNextElement;
+
+    @Transient
+    Boolean updatablePit;
+
 }

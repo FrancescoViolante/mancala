@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 @Log4j2
 @Service
@@ -25,7 +26,6 @@ public class GameServiceImpl implements GameService {
                 .playerWhoMove(calculatePlayerWhoStart(playerAmount))
                 .pits(pits).build();
 
-
         pits.forEach(pit -> pit.setGame(game));
         return gameRepo.save(game);
 
@@ -35,12 +35,101 @@ public class GameServiceImpl implements GameService {
     public Game moveStones(MovePitRequestModel movePitRequestModel) {
 
         Optional<Game> retrievedGame = gameRepo.findById(movePitRequestModel.getGameId());
-
         checkGameIdProvided(retrievedGame);
-        checkClickedPosition(retrievedGame.get(), movePitRequestModel.getPositionClicked());
 
+        Game game = retrievedGame.get();
+        checkClickedPosition(game, movePitRequestModel.getPositionClicked());
+        setAfterPitId(new LinkedList<>(game.getPits()));
+
+        //0 is not possible because is not clickable in FE
+        Predicate<Pit> pitClickedPredicate = pit -> pit.getPosition() == movePitRequestModel.getPositionClicked();
+
+        setNotUpdatablePits(new LinkedList<>(game.getPits()), movePitRequestModel, pitClickedPredicate);
+        updateNextPositionStones(game, movePitRequestModel, pitClickedPredicate);
         return null;
     }
+
+    private void setNotUpdatablePits(LinkedList<Pit> pits, MovePitRequestModel movePitRequestModel, Predicate<Pit> pitClickedPredicate) {
+
+
+        Predicate<Pit> bigPitsOfOtherPlayerPredicate = pit ->
+                (!pit.getPlayer().equals(movePitRequestModel.getPlayerWhoMoved())
+                        && pit.isBigPit());
+
+
+        pits.forEach(pit -> {
+            if (pitClickedPredicate.test(pit) || bigPitsOfOtherPlayerPredicate.test(pit)) {
+                pit.setUpdatablePit(false);
+            } else
+                pit.setUpdatablePit(true);
+        });
+    }
+
+    private void setAfterPitId(LinkedList<Pit> pits) {
+        Pit lastPit = pits.peekLast();
+
+        pits.forEach(
+                (element) -> {
+                    if (!element.equals(lastPit))
+                        element.setPositionNextElement(pits.indexOf(element) + 1);
+                    else
+                        element.setPositionNextElement(0);
+                }
+        );
+    }
+
+    private void updateNextPositionStones(Game game, MovePitRequestModel movePitRequestModel, Predicate<Pit> pitClickedPredicate) {
+
+
+        Pit clickedPit =game.getPits().stream()
+                .filter(pitClickedPredicate).findFirst().orElseThrow();
+
+        int valueOfStonesPresentInClickedPit = clickedPit.getStones();
+
+        LinkedList<Pit> orderedPits = ricreatePitListStartingFromPositionInInput(game.getPits(), movePitRequestModel.getPositionClicked(), pitClickedPredicate);
+
+        //SIMULIAMO SIANO 20
+        //valueOfStonesPresentInClickedPit = 21;
+
+        int i = 0;
+        int positionNextElementToUpdate = orderedPits.element().getPositionNextElement();
+        while (i < valueOfStonesPresentInClickedPit) {
+
+            int finalPositionNextElementToUpdate = positionNextElementToUpdate;
+            Pit pitToUpdate = orderedPits.stream().filter(e -> e.getPosition() == finalPositionNextElementToUpdate).findFirst().get();
+
+            pitToUpdate.setStones(Integer.sum(pitToUpdate.getStones(), INCREMENT_STONE));
+
+            Predicate<Pit> nextPositionPredicate = pit -> pit.getPosition() == pitToUpdate.getPositionNextElement();
+
+            positionNextElementToUpdate = ricreatePitListStartingFromPositionInInput(orderedPits, pitToUpdate.getPositionNextElement(), nextPositionPredicate)
+                                        .stream().filter(Pit::getUpdatablePit)
+                                        .findFirst().get().getPosition();
+
+            i++;
+        }
+
+        updateClickedStonesToZero(clickedPit);
+
+    }
+
+    private void updateClickedStonesToZero(Pit clickedPit) {
+        clickedPit.setStones(0);
+    }
+
+    private LinkedList<Pit> ricreatePitListStartingFromPositionInInput(List<Pit> pits, Integer positionClicked, Predicate<Pit> pitClickedPredicate) {
+        Pit positionOfElementClicked = pits.stream().filter(pitClickedPredicate).findFirst().get();
+        LinkedList<Pit> orderedListByPositionInInput = new LinkedList<>();
+        List<Pit> pitWithPositionMinorOfClickedPosition = pits.subList(INITIAL_POSITION, pits.indexOf(positionOfElementClicked));
+        ListIterator<Pit> listIterator = pits.listIterator(pits.indexOf(positionOfElementClicked));
+        while (listIterator.hasNext()) {
+            orderedListByPositionInInput.add(listIterator.next());
+        }
+        orderedListByPositionInInput.addAll(pitWithPositionMinorOfClickedPosition);
+
+        return orderedListByPositionInInput;
+    }
+
 
     private PlayerEnum calculatePlayerWhoStart(int playerAmount) {
         int randomPlayerEnumValue = new Random().ints(FIRST_PLAYER, playerAmount)
@@ -57,14 +146,14 @@ public class GameServiceImpl implements GameService {
                 .count();
 
         if (positionProvidedOccurrenciesInGame != POSITION_CLICKED_IS_PRESENT)
-            throw new IllegalArgumentException("Invalid position clicked.");
+            throw new IllegalArgumentException("Position clicked is not present.");
 
     }
 
 
     private void checkGameIdProvided(Optional<Game> retrivedGame) {
         if (retrivedGame.isEmpty())
-            throw new IllegalArgumentException("Game not present in DB.");
+            throw new IllegalArgumentException("Game not present.");
     }
 
 
@@ -76,16 +165,10 @@ public class GameServiceImpl implements GameService {
             pits.add(Pit.builder()
                     .stones(INITIAL_STONES_PIT)
                     .position(i)
-                    //  .game(game)
                     .build());
         }
         calculateBigPit(pits, pitNumber);
         return pits;
-    }
-
-    private Game createGame(int playerAmount) {
-
-        return Game.builder().playerAmount(playerAmount).build();
     }
 
     private int calculatePitNumber(int playerAmount) {

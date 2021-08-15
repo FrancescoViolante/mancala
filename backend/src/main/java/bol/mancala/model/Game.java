@@ -9,6 +9,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -32,6 +33,6 @@ public class Game implements Serializable {
     private PlayerEnum playerWhoMove;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<Pit> pits = new ArrayList<>();
+    private List<Pit> pits = new LinkedList<>();
 
 }

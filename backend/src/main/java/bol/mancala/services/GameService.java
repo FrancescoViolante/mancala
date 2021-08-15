@@ -11,6 +11,8 @@ public interface GameService {
     int FIRT_BIGPIT_POSITION = 6;
     int INITIAL_STONES_PIT = 6;
     int INITIAL_STONES_BIGPIT = 0;
+    int INITIAL_POSITION = 0;
+    int INCREMENT_STONE = 1;
     long POSITION_CLICKED_IS_PRESENT = 1L;
 
     Game initializeBoard(int playerAmount);
