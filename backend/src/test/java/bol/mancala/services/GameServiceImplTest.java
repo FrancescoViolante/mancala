@@ -36,7 +36,6 @@ class GameServiceImplTest {
         assertAll(
                 () -> assertThat(game.getPits().size()).isEqualTo(14),
                 () -> assertThat(game.getPlayerAmount()).isEqualTo(2)
-
         );
     }
 
@@ -95,11 +94,20 @@ class GameServiceImplTest {
 
     @Test
     void playerP2LastEndStealsStonesOfOpponentButLost() {
-        when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createEndGameWithTwoPlayersLastTurn()));
+        when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createEndGameWithTwoPlayersP2LastTurn()));
 
         Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelP2StealsStones());
 
-        assertEquals(GameRes.gameWithTwoPlayersP2FinalResultExpected(), game);
+        assertEquals(GameRes.gameWithTwoPlayersP2LostFinalResultExpected(), game);
+    }
+
+    @Test
+    void playerP1LastEndStealsStonesOfOpponentAndWin() {
+        when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createEndGameWithTwoPlayersP1LastTurn()));
+
+        Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelP1StealsStones());
+
+        assertEquals(GameRes.gameWithTwoPlayersP1WinFinalResultExpected(), game);
     }
 
 

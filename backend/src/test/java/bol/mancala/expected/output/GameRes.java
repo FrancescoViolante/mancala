@@ -141,7 +141,7 @@ public class GameRes {
     }
 
 
-    public static Game createEndGameWithTwoPlayersLastTurn() {
+    public static Game createEndGameWithTwoPlayersP2LastTurn() {
 
 
         List<Pit> pits = new ArrayList<>();
@@ -171,11 +171,11 @@ public class GameRes {
         return game;
     }
 
-    public static Game gameWithTwoPlayersP2FinalResultExpected() {
-        Game gameWithTwoPlayers = createEndGameWithTwoPlayersLastTurn();
+    public static Game gameWithTwoPlayersP2LostFinalResultExpected() {
+        Game gameWithTwoPlayers = createEndGameWithTwoPlayersP2LastTurn();
         setClickedPitAndBigPitOpponentNonUpdatable(gameWithTwoPlayers, List.of(6, 7));
 
-        gameWithTwoPlayers.getPits().stream().filter(pit->!pit.isBigPit())
+        gameWithTwoPlayers.getPits().stream().filter(pit -> !pit.isBigPit())
                 .forEach(pit -> pit.setStones(0));
 
         gameWithTwoPlayers.getPits().get(6).setStones(38);
@@ -185,4 +185,26 @@ public class GameRes {
         return gameWithTwoPlayers;
     }
 
+    public static Game createEndGameWithTwoPlayersP1LastTurn() {
+
+        Game game = createAdvancedGameWithTwoPlayers();
+
+        game.getPits().get(7).setStones(0);
+        game.getPits().get(5).setStones(1);
+        return game;
+    }
+
+    public static Game gameWithTwoPlayersP1WinFinalResultExpected() {
+        Game gameExpected = createEndGameWithTwoPlayersP1LastTurn();
+        setClickedPitAndBigPitOpponentNonUpdatable(gameExpected, List.of(0, 13));
+
+        gameExpected.getPits().stream().filter(pit -> !pit.isBigPit())
+                .forEach(pit -> pit.setStones(0));
+
+        gameExpected.getPits().get(6).setStones(42);
+        gameExpected.getPits().get(13).setStones(30);
+
+        gameExpected.setPlayerWhoMove(PlayerEnum.P2);
+        return gameExpected;
+    }
 }
