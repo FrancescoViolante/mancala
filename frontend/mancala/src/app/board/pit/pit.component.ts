@@ -8,8 +8,8 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 export class PitComponent implements OnInit {
 
 
-  @Input() pit; //todo quando c'è il dto dal Back  pit: PITDTO
-  @Output() pitClicked : EventEmitter<any> = new EventEmitter<any>();
+  @Input() pit: PitDto;
+  @Output() onPitClicked : EventEmitter<any> = new EventEmitter<any>();
 
 
   constructor() { }
@@ -17,4 +17,7 @@ export class PitComponent implements OnInit {
   ngOnInit() {
   }
 
+  moveStone() {
+    this.onPitClicked.emit(this.pit)
+  }
 }

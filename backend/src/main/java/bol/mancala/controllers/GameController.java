@@ -15,6 +15,7 @@ import javax.validation.Valid;
 @Log4j2
 @RestController
 @RequestMapping("mancala")
+@CrossOrigin(origins = "http://localhost:4200")
 public class GameController {
 
 

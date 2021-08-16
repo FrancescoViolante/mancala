@@ -59,6 +59,11 @@
             <version>3.8.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.4.1.Final</version>
+        </dependency>
     </dependencies>
 
 
@@ -107,7 +112,7 @@
                             <classPatterns>
                                 <pattern>bol.mancala.dto.*Dto</pattern>
                                 <pattern>bol.mancala.dto.enums.*Enum</pattern>
-                                <pattern>bol.mancala.entities.*</pattern>
+                                <pattern>bol.mancala.dto.*Model</pattern>
                             </classPatterns>
                            <excludeClasses>
                                 <class>java.io.Serializable</class>

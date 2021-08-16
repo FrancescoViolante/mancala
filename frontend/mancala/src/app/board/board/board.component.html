@@ -1,5 +1,12 @@
-<p>board works!</p>
-<ng-container *ngFor="let i of [0,13] ">
-  <app-pit > </app-pit>
-
-</ng-container>
+<div *ngIf="game" class="container">
+  <div>{{game.gameId}}</div>
+  <div>{{game.playerWhoMove}}</div>
+  <div>{{game.playerAmount}}</div>
+  <div class="row">
+    <ng-container *ngFor="let pit of game.pits">
+      <div [ngClass]="pit.bigPit ? 'col-4 offset-2' : 'col-1'">
+        <app-pit [pit]="pit" (onPitClicked)="pitClicked($event)" ></app-pit>
+      </div>
+    </ng-container>
+  </div>
+</div>

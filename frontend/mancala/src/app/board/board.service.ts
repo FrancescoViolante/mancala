@@ -10,9 +10,11 @@ export class BoardService {
 
   constructor(private httpClient: HttpClient) { }
 
-  createNewGame() : Observable<any>{
+  createNewGame() : Observable<GameDto>{
+    return this.httpClient.get<GameDto>(environment.backendURL+"mancala/new-game");
+  }
 
-
-    return this.httpClient.get(environment.backendURL+"actions/new-game");
+  moveStones(model: MovePitRequestModel) : Observable<GameDto>{
+    return this.httpClient.post<GameDto>(environment.backendURL+"mancala/move-stones", model);
   }
 }

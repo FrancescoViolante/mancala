@@ -70,7 +70,7 @@ public class GameServiceImpl implements GameService {
 
 
         Pit clickedPit = findPitClickedInPitList(game, pitClickedPredicate);
-        LinkedList<Pit> orderedPits = ricreatePitListStartingFromPositionInInput(game.getPits(), pitClickedPredicate);
+        LinkedList<Pit> orderedPits = recreatePitListStartingFromPositionInInput(game.getPits(), pitClickedPredicate);
 
         updatePitStones(game, movePitRequestModel.getPlayerWhoMoved(), clickedPit, orderedPits);
         updateClickedOrStealedPitStonesToZero(clickedPit);
@@ -149,7 +149,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private int calculatePositionNextPitToUpdate(LinkedList<Pit> orderedPits, Predicate<Pit> nextPositionPredicate) {
-        return ricreatePitListStartingFromPositionInInput(orderedPits, nextPositionPredicate)
+        return recreatePitListStartingFromPositionInInput(orderedPits, nextPositionPredicate)
                 .stream().filter(Pit::getUpdatablePit)
                 .findFirst().get().getPosition();
     }
@@ -184,7 +184,7 @@ public class GameServiceImpl implements GameService {
         clickedPit.setStones(0);
     }
 
-    private LinkedList<Pit> ricreatePitListStartingFromPositionInInput(List<Pit> pits, Predicate<Pit> searchPitPredicate) {
+    private LinkedList<Pit> recreatePitListStartingFromPositionInInput(List<Pit> pits, Predicate<Pit> searchPitPredicate) {
         Pit positionOfPitSearched = pits.stream().filter(searchPitPredicate).findFirst().get();
         LinkedList<Pit> orderedListByPositionInInput = new LinkedList<>();
         List<Pit> pitsWithPositionMinorOfPitSearched = pits.subList(INITIAL_POSITION, pits.indexOf(positionOfPitSearched));
