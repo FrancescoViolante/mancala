@@ -69,7 +69,7 @@ public class GameRes {
     }
 
 
-    public static Game createEndGameWithTwoPlayers() {
+    public static Game createAdvancedGameWithTwoPlayers() {
 
 
         List<Pit> pits = new ArrayList<>();
@@ -89,24 +89,38 @@ public class GameRes {
         game.getPits().forEach(pit -> pit.setGame(game));
         GameUtil.setNextPitPosition(new LinkedList<>(game.getPits()));
 
+        game.getPits().get(0).setStones(1);
+        game.getPits().get(11).setStones(7);
+
         game.getPits().get(7).setStones(1);
-        game.getPits().get(4).setStones(11);
+        game.getPits().get(4).setStones(3);
         return game;
     }
 
 
-    public static Game gameWithTwoPlayersClickLastTurnExpected() {
-        Game gameWithTwoPlayers = createEndGameWithTwoPlayers();
+    public static Game gameWithTwoPlayersP2StealsStonesExpected() {
+        Game gameWithTwoPlayers = createAdvancedGameWithTwoPlayers();
         setClickedPitAndBigPitOpponentNonUpdatable(gameWithTwoPlayers, List.of(6, 7));
 
         gameWithTwoPlayers.getPits().get(7).setStones(0);
         gameWithTwoPlayers.getPits().get(4).setStones(0);
-        gameWithTwoPlayers.getPits().get(13).setStones(42);
+        gameWithTwoPlayers.getPits().get(13).setStones(34);
 
         gameWithTwoPlayers.setPlayerWhoMove(PlayerEnum.P1);
         return gameWithTwoPlayers;
     }
 
+    public static Game gameWithTwoPlayersP1StealsStonesExpected() {
+        Game gameWithTwoPlayers = createAdvancedGameWithTwoPlayers();
+        setClickedPitAndBigPitOpponentNonUpdatable(gameWithTwoPlayers, List.of(0, 13));
+
+        gameWithTwoPlayers.getPits().get(0).setStones(0);
+        gameWithTwoPlayers.getPits().get(11).setStones(0);
+        gameWithTwoPlayers.getPits().get(6).setStones(38);
+
+        gameWithTwoPlayers.setPlayerWhoMove(PlayerEnum.P2);
+        return gameWithTwoPlayers;
+    }
 
     private static void setClickedPitAndBigPitOpponentNonUpdatable(Game game, List<Integer> i) {
         game.getPits().stream().filter(pit -> i.contains(pit.getPosition()))

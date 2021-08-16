@@ -11,7 +11,13 @@ public class MovePitRequestModelImp {
 
     }
 
-    public static MovePitRequestModel createMovePitRequestModelLastMove() {
+    public static MovePitRequestModel createMovePitRequestModelP1StealsStones() {
+
+        return new MovePitRequestModel(1L, 0, PlayerEnum.P1);
+
+    }
+
+    public static MovePitRequestModel createMovePitRequestModelP2StealsStones() {
 
         return new MovePitRequestModel(1L, 7, PlayerEnum.P2);
 

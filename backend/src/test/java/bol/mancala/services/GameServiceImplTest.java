@@ -1,22 +1,17 @@
 package bol.mancala.services;
 
 import bol.mancala.dto.MovePitRequestModel;
-import bol.mancala.dto.enums.PlayerEnum;
 import bol.mancala.expected.inputs.MovePitRequestModelImp;
 import bol.mancala.expected.results.GameRes;
 import bol.mancala.entities.Game;
-import bol.mancala.entities.Pit;
 import bol.mancala.repositories.GameRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -81,12 +76,21 @@ class GameServiceImplTest {
     }
 
     @Test
-    void stealStonesOfOpponent() {
-        when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createEndGameWithTwoPlayers()));
+    void playerP1stealsStonesOfOpponent() {
+        when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createAdvancedGameWithTwoPlayers()));
 
-        Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelLastMove());
+        Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelP1StealsStones());
 
-        assertEquals(GameRes.gameWithTwoPlayersClickLastTurnExpected(), game);
+        assertEquals(GameRes.gameWithTwoPlayersP1StealsStonesExpected(), game);
+    }
+
+    @Test
+    void playerP2stealsStonesOfOpponent() {
+        when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createAdvancedGameWithTwoPlayers()));
+
+        Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelP2StealsStones());
+
+        assertEquals(GameRes.gameWithTwoPlayersP2StealsStonesExpected(), game);
     }
 
 

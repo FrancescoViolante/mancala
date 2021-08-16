@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @ExtendWith(SpringExtension.class)
 class GameRepoTest {
 
+    public static final int INITIAL_STONE_VALUE = 6;
+
     @Autowired
     private GameRepo gameRepo;
 
@@ -77,7 +79,7 @@ class GameRepoTest {
 
     private Executable stoneInitialValueIs6(Game game) {
         return () ->
-                assertThat(game.getPits().stream().map(Pit::getStones).allMatch(stones -> stones == 6));
+                assertThat(game.getPits().stream().map(Pit::getStones).allMatch(stones -> stones == INITIAL_STONE_VALUE));
     }
 
 

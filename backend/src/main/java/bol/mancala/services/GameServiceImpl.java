@@ -91,7 +91,7 @@ public class GameServiceImpl implements GameService {
 
             positionNextElementToUpdate = calculatePositionNextPitToUpdate(orderedPits, nextPositionPredicate);
             i++;
-            if(isLastPitToUpdated(clickedPit, i)){
+            if (isLastPitToUpdated(clickedPit, i)) {
                 calculateNextPlayerWhoMove(game, playerWhoMoved, pitToUpdate);
                 stealPitsOpponent(game, playerWhoMoved, pitToUpdate);
             }
@@ -112,25 +112,39 @@ public class GameServiceImpl implements GameService {
     }
 
     private void reversePits(Game game, Pit pitToUpdate) {
-        List<Pit> pits = game.getPits();
-        int indexOfPitStealer = pits.stream().filter(this::isNotABigPit).collect(Collectors.toList()).indexOf(pitToUpdate);
 
-        Collections.reverse(pits);
+        List<Pit> pitsWithoutBigPits = game.getPits().stream().filter(this::isNotABigPit).collect(Collectors.toList());
+        List<Pit> p1List = pitsWithoutBigPits.stream().filter(pit -> pit.getPlayer().equals(PlayerEnum.P1)).collect(Collectors.toList());
+        List<Pit> p2List = pitsWithoutBigPits.stream().filter(pit -> pit.getPlayer().equals(PlayerEnum.P2))
+                .sorted(Comparator.comparing(Pit::getPosition).reversed())
+                .collect(Collectors.toList());
 
-        Pit oppositePit = game.getPits().stream().filter(this::isNotABigPit)
-                .filter(pit ->  pits.indexOf(pit) - 2 == indexOfPitStealer).findFirst().orElseThrow();
-        steal(game, pitToUpdate, oppositePit );
+        steal(game, pitToUpdate,  calculateOppositePit(pitToUpdate, p1List, p2List));
+    }
+
+    private Pit calculateOppositePit(Pit pitToUpdate, List<Pit> p1List, List<Pit> p2List) {
+
+
+        switch (pitToUpdate.getPlayer()) {
+            case P1: {
+               return p2List.get(p1List.indexOf(pitToUpdate));
+            }
+            case P2: {
+                return  p1List.get(p2List.indexOf(pitToUpdate));
+            }
+            default:
+                throw new IllegalArgumentException(String.format("Invalid player %s", pitToUpdate.getPlayer()));
+        }
     }
 
     private void steal(Game game, Pit stealerPit, Pit oppositePit) {
 
-        if(!isAPitWithoutStones(oppositePit)){
-           int stonesToAddToOpponentBigPit =  oppositePit.getStones() + stealerPit.getStones();
+        if (!isAPitWithoutStones(oppositePit)) {
+            int stonesToAddToOpponentBigPit = oppositePit.getStones() + stealerPit.getStones();
 
-            Collections.reverse(game.getPits());
             Pit bigPitToUpdate = game.getPits().stream().filter(Pit::isBigPit)
-                    .filter(pit -> hasPitSamePlayerWhoMoved(pit.getPlayer(), stealerPit)).findFirst().orElseThrow();
-            bigPitToUpdate.setStones(Integer.sum(bigPitToUpdate.getStones(),stonesToAddToOpponentBigPit));
+                    .filter(pit -> pit.getPlayer().equals(stealerPit.getPlayer())).findFirst().orElseThrow();
+            bigPitToUpdate.setStones(Integer.sum(bigPitToUpdate.getStones(), stonesToAddToOpponentBigPit));
             updateClickedOrStealedPitStonesToZero(oppositePit);
             updateClickedOrStealedPitStonesToZero(stealerPit);
         }
@@ -140,6 +154,7 @@ public class GameServiceImpl implements GameService {
     private boolean isAPitWithoutStones(Pit pitToUpdate) {
         return pitToUpdate.getStones() == 0;
     }
+
     private boolean isAPitWithOneStone(Pit pitToUpdate) {
         return pitToUpdate.getStones() == 1;
     }
@@ -159,7 +174,7 @@ public class GameServiceImpl implements GameService {
                 && pitToUpdate.isBigPit()) {
             game.setPlayerWhoMove(playerWhoMoved);
         } else {
-            game.setPlayerWhoMove(PlayerEnum.getNextPlayerEnum(game.getPlayerAmount(), game.getPlayerWhoMove()));
+            game.setPlayerWhoMove(PlayerEnum.getNextPlayerEnum(game.getPlayerAmount(), playerWhoMoved));
         }
     }
 
@@ -199,7 +214,7 @@ public class GameServiceImpl implements GameService {
 
 
     private PlayerEnum calculatePlayerWhoStart(int playerAmount) {
-        int randomPlayerEnumValue = new Random().ints(FIRST_PLAYER, playerAmount+1)
+        int randomPlayerEnumValue = new Random().ints(FIRST_PLAYER, playerAmount + 1)
                 .findFirst().orElse(1);
 
         return PlayerEnum.getPlayerEnumByValue(randomPlayerEnumValue);
