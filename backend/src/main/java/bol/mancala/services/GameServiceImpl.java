@@ -9,8 +9,11 @@ import bol.mancala.utils.GameUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 
 @Service
@@ -45,10 +48,11 @@ public class GameServiceImpl implements GameService {
         GameUtil.setNextPitPosition(new LinkedList<>(game.getPits()));
         setNotUpdatablePits(new LinkedList<>(game.getPits()), movePitRequestModel, pitClickedPredicate);
         calculateNextTurnGame(game, movePitRequestModel, pitClickedPredicate);
-
+        closeGameIfLastTurn(game);
 
         return game;
     }
+
 
     public Game saveOrUpdateGameInDataBase(Game game) {
         return gameRepo.save(game);
@@ -93,16 +97,16 @@ public class GameServiceImpl implements GameService {
             i++;
             if (isLastPitToUpdated(clickedPit, i)) {
                 calculateNextPlayerWhoMove(game, playerWhoMoved, pitToUpdate);
-                stealPitsOpponent(game, playerWhoMoved, pitToUpdate);
+                checkIfOpponentStonesCanBeStealed(game, playerWhoMoved, pitToUpdate);
             }
 
         }
     }
 
-    private void stealPitsOpponent(Game game, PlayerEnum playerWhoMoved, Pit pitToUpdate) {
+    private void checkIfOpponentStonesCanBeStealed(Game game, PlayerEnum playerWhoMoved, Pit pitToUpdate) {
         if (hasPitSamePlayerWhoMoved(playerWhoMoved, pitToUpdate)
                 && isNotABigPit(pitToUpdate) && isAPitWithOneStone(pitToUpdate)) {
-            reversePits(game, pitToUpdate);
+            createPitsForPlayerWithoutBigPits(game, pitToUpdate);
         }
 
     }
@@ -111,18 +115,18 @@ public class GameServiceImpl implements GameService {
         return !pitToUpdate.isBigPit();
     }
 
-    private void reversePits(Game game, Pit pitToUpdate) {
+    private void createPitsForPlayerWithoutBigPits(Game game, Pit pitToUpdate) {
 
-        List<Pit> pitsWithoutBigPits = game.getPits().stream().filter(this::isNotABigPit).collect(Collectors.toList());
-        List<Pit> p1List = pitsWithoutBigPits.stream().filter(pit -> pit.getPlayer().equals(PlayerEnum.P1)).collect(Collectors.toList());
-        List<Pit> p2List = pitsWithoutBigPits.stream().filter(pit -> pit.getPlayer().equals(PlayerEnum.P2))
+        List<Pit> pitsWithoutBigPits = game.getPits().stream().filter(this::isNotABigPit).collect(toList());
+        List<Pit> playerP1Pits = pitsWithoutBigPits.stream().filter(pit -> pit.getPlayer().equals(PlayerEnum.P1)).collect(toList());
+        List<Pit> playerP2Pits = pitsWithoutBigPits.stream().filter(pit -> pit.getPlayer().equals(PlayerEnum.P2))
                 .sorted(Comparator.comparing(Pit::getPosition).reversed())
-                .collect(Collectors.toList());
+                .collect(toList());
 
-        steal(game, pitToUpdate,  calculateOppositePit(pitToUpdate, p1List, p2List));
+        stealStonesOfOpponent(game, pitToUpdate,  calculateOppositePitOfClickedPit(pitToUpdate, playerP1Pits, playerP2Pits));
     }
 
-    private Pit calculateOppositePit(Pit pitToUpdate, List<Pit> p1List, List<Pit> p2List) {
+    private Pit calculateOppositePitOfClickedPit(Pit pitToUpdate, List<Pit> p1List, List<Pit> p2List) {
 
 
         switch (pitToUpdate.getPlayer()) {
@@ -137,19 +141,27 @@ public class GameServiceImpl implements GameService {
         }
     }
 
-    private void steal(Game game, Pit stealerPit, Pit oppositePit) {
+    private void stealStonesOfOpponent(Game game, Pit stealerPit, Pit oppositePit) {
 
         if (!isAPitWithoutStones(oppositePit)) {
             int stonesToAddToOpponentBigPit = oppositePit.getStones() + stealerPit.getStones();
 
             Pit bigPitToUpdate = game.getPits().stream().filter(Pit::isBigPit)
                     .filter(pit -> pit.getPlayer().equals(stealerPit.getPlayer())).findFirst().orElseThrow();
-            bigPitToUpdate.setStones(Integer.sum(bigPitToUpdate.getStones(), stonesToAddToOpponentBigPit));
+            bigPitToUpdate.setStones(sumStonesToPit(stonesToAddToOpponentBigPit, bigPitToUpdate));
             updateClickedOrStealedPitStonesToZero(oppositePit);
             updateClickedOrStealedPitStonesToZero(stealerPit);
         }
     }
 
+    private int sumStonesToPit(int stonesToAddToOpponentBigPit, Pit bigPitToUpdate) {
+        return Integer.sum(bigPitToUpdate.getStones(), stonesToAddToOpponentBigPit);
+    }
+
+
+    private void resetStones(List<Pit> pits) {
+        pits.forEach( pit -> pit.setStones(INITIAL_STONES_BIGPIT));
+    }
 
     private boolean isAPitWithoutStones(Pit pitToUpdate) {
         return pitToUpdate.getStones() == 0;
@@ -187,7 +199,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private void incrementStoneNextPitByOne(Pit pitToUpdate) {
-        pitToUpdate.setStones(Integer.sum(pitToUpdate.getStones(), INCREMENT_STONE));
+        pitToUpdate.setStones(sumStonesToPit(INCREMENT_STONE, pitToUpdate));
     }
 
     private Pit findPitClickedInPitList(Game game, Predicate<Pit> pitClickedPredicate) {
@@ -275,6 +287,47 @@ public class GameServiceImpl implements GameService {
 
     private int pitValueStartingFromZero(int pitNumber) {
         return pitNumber - 1;
+    }
+
+
+    private void closeGameIfLastTurn(Game game) {
+        Map<PlayerEnum, List<Pit>> mapOfPitsByPlayerEnum = game.getPits().stream().filter(pit -> !pit.isBigPit())
+                .collect(groupingBy(Pit::getPlayer, mapping(Function.identity(), toList())));
+        AtomicBoolean stonesOfOnePlayerAllZero= new AtomicBoolean(false);
+
+        mapOfPitsByPlayerEnum.forEach((k, v) -> {
+            if(!stonesOfOnePlayerAllZero.get()){
+                stonesOfOnePlayerAllZero.set(checkIfAllStonesOfPlayerAreZero(v));
+            }
+        });
+        sumRemainingStonesToBigPits(game, mapOfPitsByPlayerEnum, stonesOfOnePlayerAllZero);
+    }
+
+    private void sumRemainingStonesToBigPits(Game game, Map<PlayerEnum, List<Pit>> mapOfPitsByPlayerEnum, AtomicBoolean stonesOfOnePlayerAllZero) {
+        if(stonesOfOnePlayerAllZero.get()){
+
+            mapOfPitsByPlayerEnum.forEach((k,v) -> {
+                Pit bigPitByPlayerEnum = retrieveBigPitByPlayerEnum(game, k);
+                int stonesToAdd = calculateRemainingStones(v);
+                bigPitByPlayerEnum.setStones(sumStonesToPit(stonesToAdd, bigPitByPlayerEnum));
+            });
+            resetStones(game.getPits().stream()
+                    .filter(pit -> !pit.isBigPit()).collect(toList()));
+        }
+    }
+
+    private Pit retrieveBigPitByPlayerEnum(Game game, PlayerEnum k) {
+        return game.getPits().stream().filter(Pit::isBigPit).filter(pit -> pit.getPlayer() == k).findFirst().get();
+    }
+
+    private int calculateRemainingStones(List<Pit> v) {
+        int stonesToAdd = v.stream().mapToInt(Pit::getStones).sum();
+        return stonesToAdd;
+    }
+
+
+    private boolean checkIfAllStonesOfPlayerAreZero(List<Pit> v) {
+        return v.stream().map(Pit::getStones).allMatch(value -> value == 0);
     }
 
 

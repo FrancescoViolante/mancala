@@ -1,4 +1,4 @@
-package bol.mancala.expected.results;
+package bol.mancala.expected.output;
 
 import bol.mancala.dto.enums.PlayerEnum;
 import bol.mancala.entities.Game;
@@ -140,5 +140,49 @@ public class GameRes {
         return pits;
     }
 
+
+    public static Game createEndGameWithTwoPlayersLastTurn() {
+
+
+        List<Pit> pits = new ArrayList<>();
+        IntStream.range(0, 14)
+                .forEach(position -> {
+                    Pit pit = Pit.builder().stones(0).bigPit(false).updatablePit(true).position(position).build();
+                    calculatePlayer(pit);
+                    adaptBigPitValues(pit, 30);
+                    pits.add(pit);
+                });
+
+        Game game = Game.builder().playerAmount(2).gameId(1L)
+                .playerWhoMove(PlayerEnum.P2)
+                .pits(pits)
+                .build();
+
+        game.getPits().forEach(pit -> pit.setGame(game));
+        GameUtil.setNextPitPosition(new LinkedList<>(game.getPits()));
+
+        game.getPits().get(0).setStones(1);
+        game.getPits().get(7).setStones(1);
+
+        game.getPits().get(2).setStones(1);
+        game.getPits().get(3).setStones(3);
+        game.getPits().get(4).setStones(3);
+        game.getPits().get(5).setStones(3);
+        return game;
+    }
+
+    public static Game gameWithTwoPlayersP2FinalResultExpected() {
+        Game gameWithTwoPlayers = createEndGameWithTwoPlayersLastTurn();
+        setClickedPitAndBigPitOpponentNonUpdatable(gameWithTwoPlayers, List.of(6, 7));
+
+        gameWithTwoPlayers.getPits().stream().filter(pit->!pit.isBigPit())
+                .forEach(pit -> pit.setStones(0));
+
+        gameWithTwoPlayers.getPits().get(6).setStones(38);
+        gameWithTwoPlayers.getPits().get(13).setStones(34);
+
+        gameWithTwoPlayers.setPlayerWhoMove(PlayerEnum.P1);
+        return gameWithTwoPlayers;
+    }
 
 }

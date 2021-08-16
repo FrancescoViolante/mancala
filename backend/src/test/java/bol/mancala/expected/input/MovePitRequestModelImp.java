@@ -1,4 +1,4 @@
-package bol.mancala.expected.inputs;
+package bol.mancala.expected.input;
 
 import bol.mancala.dto.MovePitRequestModel;
 import bol.mancala.dto.enums.PlayerEnum;

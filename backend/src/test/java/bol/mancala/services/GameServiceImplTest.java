@@ -1,8 +1,8 @@
 package bol.mancala.services;
 
 import bol.mancala.dto.MovePitRequestModel;
-import bol.mancala.expected.inputs.MovePitRequestModelImp;
-import bol.mancala.expected.results.GameRes;
+import bol.mancala.expected.input.MovePitRequestModelImp;
+import bol.mancala.expected.output.GameRes;
 import bol.mancala.entities.Game;
 import bol.mancala.repositories.GameRepo;
 import org.junit.jupiter.api.Test;
@@ -91,6 +91,15 @@ class GameServiceImplTest {
         Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelP2StealsStones());
 
         assertEquals(GameRes.gameWithTwoPlayersP2StealsStonesExpected(), game);
+    }
+
+    @Test
+    void playerP2LastEndStealsStonesOfOpponentButLost() {
+        when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createEndGameWithTwoPlayersLastTurn()));
+
+        Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelP2StealsStones());
+
+        assertEquals(GameRes.gameWithTwoPlayersP2FinalResultExpected(), game);
     }
 
 
