@@ -3,7 +3,6 @@ package bol.mancala.expected.output;
 import bol.mancala.dto.enums.PlayerEnum;
 import bol.mancala.entities.Game;
 import bol.mancala.entities.Pit;
-import bol.mancala.mappers.GameMapper;
 import bol.mancala.utils.GameUtil;
 
 import java.util.ArrayList;
@@ -174,17 +173,18 @@ public class GameRes {
     }
 
     public static Game gameWithTwoPlayersP2LostFinalResultExpected() {
-        Game gameWithTwoPlayers = createEndGameWithTwoPlayersP2LastTurn();
-        setClickedPitAndBigPitOpponentNonUpdatable(gameWithTwoPlayers, List.of(6, 7));
+        Game gameExpected = createEndGameWithTwoPlayersP2LastTurn();
+        setClickedPitAndBigPitOpponentNonUpdatable(gameExpected, List.of(6, 7));
 
-        gameWithTwoPlayers.getPits().stream().filter(pit -> !pit.isBigPit())
+        gameExpected.getPits().stream().filter(pit -> !pit.isBigPit())
                 .forEach(pit -> pit.setStones(0));
 
-        gameWithTwoPlayers.getPits().get(6).setStones(38);
-        gameWithTwoPlayers.getPits().get(13).setStones(34);
+        gameExpected.getPits().get(6).setStones(38);
+        gameExpected.getPits().get(13).setStones(34);
 
-        gameWithTwoPlayers.setPlayerWhoMove(PlayerEnum.P1);
-        return gameWithTwoPlayers;
+        gameExpected.setPlayerWhoMove(PlayerEnum.P1);
+        gameExpected.setFinished(true);
+        return gameExpected;
     }
 
     public static Game createEndGameWithTwoPlayersP1LastTurn() {
@@ -207,6 +207,7 @@ public class GameRes {
         gameExpected.getPits().get(13).setStones(30);
 
         gameExpected.setPlayerWhoMove(PlayerEnum.P2);
+        gameExpected.setFinished(true);
         return gameExpected;
     }
 }

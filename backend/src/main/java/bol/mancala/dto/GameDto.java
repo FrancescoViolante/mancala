@@ -1,7 +1,6 @@
 package bol.mancala.dto;
 
 import bol.mancala.dto.enums.PlayerEnum;
-import bol.mancala.entities.Pit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

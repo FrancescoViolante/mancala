@@ -8,7 +8,6 @@ import bol.mancala.entities.Pit;
 import bol.mancala.mappers.GameMapper;
 import bol.mancala.repositories.GameRepo;
 import bol.mancala.utils.GameUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -229,7 +228,6 @@ public class GameServiceImpl implements GameService {
         return orderedListByPositionInInput;
     }
 
-
     private PlayerEnum calculatePlayerWhoStart(int playerAmount) {
         int randomPlayerEnumValue = new Random().ints(FIRST_PLAYER, playerAmount + 1)
                 .findFirst().orElse(1);
@@ -327,8 +325,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private int calculateRemainingStones(List<Pit> v) {
-        int stonesToAdd = v.stream().mapToInt(Pit::getStones).sum();
-        return stonesToAdd;
+        return v.stream().mapToInt(Pit::getStones).sum();
     }
 
 
