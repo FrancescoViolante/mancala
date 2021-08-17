@@ -113,6 +113,12 @@
                             <version>1.4.2.Final</version>
                         </path>
                     </annotationProcessorPaths>
+                    <!-- This is needed to load mapper by default as @Mapper(componentModel = "spring") -->
+                    <compilerArgs>
+                        <compilerArg>
+                            -Amapstruct.defaultComponentModel=spring
+                        </compilerArg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 
