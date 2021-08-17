@@ -1,11 +1,14 @@
 package bol.mancala.services;
 
+import bol.mancala.dto.GameDto;
 import bol.mancala.dto.MovePitRequestModel;
 import bol.mancala.dto.enums.PlayerEnum;
 import bol.mancala.entities.Game;
 import bol.mancala.entities.Pit;
+import bol.mancala.mappers.GameMapper;
 import bol.mancala.repositories.GameRepo;
 import bol.mancala.utils.GameUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -20,6 +23,7 @@ import static java.util.stream.Collectors.*;
 public class GameServiceImpl implements GameService {
 
     private final GameRepo gameRepo;
+    private final GameMapper gameMapper;
 
     public Game initializeBoard(int playerAmount) {
 
@@ -54,8 +58,9 @@ public class GameServiceImpl implements GameService {
     }
 
 
-    public Game saveOrUpdateGameInDataBase(Game game) {
-        return gameRepo.save(game);
+    public GameDto saveOrUpdateGameInDataBase(Game game) {
+
+        return gameMapper.gameToGameDto(gameRepo.save(game));
     }
 
     private void setNotUpdatablePits(LinkedList<Pit> pits, MovePitRequestModel movePitRequestModel, Predicate<Pit> pitClickedPredicate) {
@@ -123,7 +128,7 @@ public class GameServiceImpl implements GameService {
                 .sorted(Comparator.comparing(Pit::getPosition).reversed())
                 .collect(toList());
 
-        stealStonesOfOpponent(game, pitToUpdate,  calculateOppositePitOfClickedPit(pitToUpdate, playerP1Pits, playerP2Pits));
+        stealStonesOfOpponent(game, pitToUpdate, calculateOppositePitOfClickedPit(pitToUpdate, playerP1Pits, playerP2Pits));
     }
 
     private Pit calculateOppositePitOfClickedPit(Pit pitToUpdate, List<Pit> p1List, List<Pit> p2List) {
@@ -131,10 +136,10 @@ public class GameServiceImpl implements GameService {
 
         switch (pitToUpdate.getPlayer()) {
             case P1: {
-               return p2List.get(p1List.indexOf(pitToUpdate));
+                return p2List.get(p1List.indexOf(pitToUpdate));
             }
             case P2: {
-                return  p1List.get(p2List.indexOf(pitToUpdate));
+                return p1List.get(p2List.indexOf(pitToUpdate));
             }
             default:
                 throw new IllegalArgumentException(String.format("Invalid player %s", pitToUpdate.getPlayer()));
@@ -160,7 +165,7 @@ public class GameServiceImpl implements GameService {
 
 
     private void resetStones(List<Pit> pits) {
-        pits.forEach( pit -> pit.setStones(INITIAL_STONES_BIGPIT));
+        pits.forEach(pit -> pit.setStones(INITIAL_STONES_BIGPIT));
     }
 
     private boolean isAPitWithoutStones(Pit pitToUpdate) {
@@ -293,10 +298,10 @@ public class GameServiceImpl implements GameService {
     private void closeGameIfLastTurn(Game game) {
         Map<PlayerEnum, List<Pit>> mapOfPitsByPlayerEnum = game.getPits().stream().filter(pit -> !pit.isBigPit())
                 .collect(groupingBy(Pit::getPlayer, mapping(Function.identity(), toList())));
-        AtomicBoolean stonesOfOnePlayerAllZero= new AtomicBoolean(false);
+        AtomicBoolean stonesOfOnePlayerAllZero = new AtomicBoolean(false);
 
         mapOfPitsByPlayerEnum.forEach((k, v) -> {
-            if(!stonesOfOnePlayerAllZero.get()){
+            if (!stonesOfOnePlayerAllZero.get()) {
                 stonesOfOnePlayerAllZero.set(checkIfAllStonesOfPlayerAreZero(v));
             }
         });
@@ -304,9 +309,9 @@ public class GameServiceImpl implements GameService {
     }
 
     private void sumRemainingStonesToBigPits(Game game, Map<PlayerEnum, List<Pit>> mapOfPitsByPlayerEnum, AtomicBoolean stonesOfOnePlayerAllZero) {
-        if(stonesOfOnePlayerAllZero.get()){
+        if (stonesOfOnePlayerAllZero.get()) {
 
-            mapOfPitsByPlayerEnum.forEach((k,v) -> {
+            mapOfPitsByPlayerEnum.forEach((k, v) -> {
                 Pit bigPitByPlayerEnum = retrieveBigPitByPlayerEnum(game, k);
                 int stonesToAdd = calculateRemainingStones(v);
                 bigPitByPlayerEnum.setStones(sumStonesToPit(stonesToAdd, bigPitByPlayerEnum));
@@ -330,8 +335,8 @@ public class GameServiceImpl implements GameService {
         return v.stream().map(Pit::getStones).allMatch(value -> value == 0);
     }
 
-
-    public GameServiceImpl(GameRepo gameRepo) {
+    public GameServiceImpl(GameRepo gameRepo, GameMapper gameMapper) {
         this.gameRepo = gameRepo;
+        this.gameMapper = gameMapper;
     }
 }

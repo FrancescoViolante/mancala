@@ -3,6 +3,7 @@ package bol.mancala.expected.output;
 import bol.mancala.dto.enums.PlayerEnum;
 import bol.mancala.entities.Game;
 import bol.mancala.entities.Pit;
+import bol.mancala.mappers.GameMapper;
 import bol.mancala.utils.GameUtil;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class GameRes {
+
 
 
     public static Game createNewGameWithTwoPlayers() {

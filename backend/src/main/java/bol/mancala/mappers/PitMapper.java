@@ -7,10 +7,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface PitMapper {
 
-    PitMapper INSTANCE = Mappers.getMapper(PitMapper.class);
+    //PitMapper pitMapper = Mappers.getMapper(PitMapper.class);
 
     PitDto pitToPitDto(Pit pit);
 }

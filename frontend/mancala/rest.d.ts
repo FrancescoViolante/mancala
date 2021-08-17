@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.27.744 on 2021-08-16 18:16:07.
+// Generated using typescript-generator version 2.27.744 on 2021-08-17 17:49:51.
 
 interface GameDto {
     gameId: number;

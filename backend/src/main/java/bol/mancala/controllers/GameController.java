@@ -1,6 +1,7 @@
 package bol.mancala.controllers;
 
 
+import bol.mancala.dto.GameDto;
 import bol.mancala.dto.MovePitRequestModel;
 import bol.mancala.entities.Game;
 import bol.mancala.services.GameService;
@@ -23,14 +24,14 @@ public class GameController {
 
 
     @GetMapping("/new-game")
-    public ResponseEntity<Game> createGame() {
+    public ResponseEntity<GameDto> createGame() {
 
         Game gameToSave = gameService.initializeBoard(2);
         return  ResponseEntity.ok(gameService.saveOrUpdateGameInDataBase(gameToSave));
     }
 
     @PostMapping("/move-stones")
-    public ResponseEntity<Game> moveStones(@Valid @RequestBody MovePitRequestModel movePitRequestModel) {
+    public ResponseEntity<GameDto> moveStones(@Valid @RequestBody MovePitRequestModel movePitRequestModel) {
 
         Game gameToUpdate = gameService.moveStones(movePitRequestModel);
         return ResponseEntity.ok(gameService.saveOrUpdateGameInDataBase(gameToUpdate));

@@ -1,5 +1,6 @@
 package bol.mancala.services;
 
+import bol.mancala.dto.GameDto;
 import bol.mancala.dto.MovePitRequestModel;
 import bol.mancala.entities.Game;
 
@@ -19,5 +20,5 @@ public interface GameService {
 
     Game moveStones(MovePitRequestModel movePitRequestModel);
 
-     Game saveOrUpdateGameInDataBase(Game game);
+     GameDto saveOrUpdateGameInDataBase(Game game);
 }

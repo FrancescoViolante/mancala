@@ -40,7 +40,6 @@ public class Pit implements Serializable {
     private PlayerEnum player;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    //@JoinColumn(name = "game_gameId")
     @JoinColumn(name = "gameId")
     @JsonIgnore
     @ToString.Exclude
