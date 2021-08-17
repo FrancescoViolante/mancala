@@ -1,12 +1,27 @@
 <div *ngIf="game" class="container">
-  <div>{{game.gameId}}</div>
-  <div>{{game.playerWhoMove}}</div>
-  <div>{{game.playerAmount}}</div>
-  <div class="row">
-    <ng-container *ngFor="let pit of game.pits">
-      <div [ngClass]="pit.bigPit ? 'col-4 offset-2' : 'col-1'">
-        <app-pit [pit]="pit" (onPitClicked)="pitClicked($event)" ></app-pit>
+  <div class="text-center mb-3 border-dark ">Turn of Player {{game.playerWhoMove}}</div>
+
+
+  <div class="row border border-dark">
+
+    <div class="col-12 text-center">Player 2</div>
+    <ng-container *ngFor="let pit of game.pitP2.reverse(); let first = first; let last = last">
+      <div [ngClass]="[pit.bigPit ? 'col-2' : 'col-1', first ? 'offset-1' : '', last ? 'col-3' : '']">
+        <app-pit [pit]="pit" (onPitClicked)="pitClicked($event)"></app-pit>
       </div>
     </ng-container>
   </div>
+
+  <div class="row border border-dark">
+    <ng-container *ngFor="let pit of game.pitP1; let first = first">
+      <div [ngClass]="[pit.bigPit ? 'col-2 offset-1' : 'col-1', first ? 'offset-3': '']">
+        <app-pit [pit]="pit" (onPitClicked)="pitClicked($event)"></app-pit>
+
+      </div>
+    </ng-container>
+    <div class="col-12 text-center">Player 1</div>
+  </div>
+  <div class="row border text-center mt-3 border-dark" *ngIf="game.finished">End game. {{winner}}</div>
+
+
 </div>

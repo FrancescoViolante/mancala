@@ -1,12 +1,14 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.27.744 on 2021-08-17 17:49:51.
+// Generated using typescript-generator version 2.27.744 on 2021-08-17 19:08:41.
 
 interface GameDto {
     gameId: number;
     playerAmount: number;
     playerWhoMove: PlayerEnum;
-    pits: PitDto[];
+    pitP1: PitDto[];
+    pitP2: PitDto[];
+    finished: boolean;
 }
 
 interface MovePitRequestModel {

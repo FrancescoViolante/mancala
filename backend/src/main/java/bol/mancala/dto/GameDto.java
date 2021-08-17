@@ -20,5 +20,9 @@ public class GameDto {
     private Long gameId;
     private int playerAmount;
     private PlayerEnum playerWhoMove;
-    private List<PitDto> pits = new LinkedList<>();
+
+    private List<PitDto> pitP1 = new LinkedList<>();
+    private List<PitDto> pitP2 = new LinkedList<>();
+
+    private boolean finished;
 }

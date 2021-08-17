@@ -35,4 +35,7 @@ public class Game implements Serializable {
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Pit> pits = new LinkedList<>();
 
+    private boolean finished;
+
+
 }

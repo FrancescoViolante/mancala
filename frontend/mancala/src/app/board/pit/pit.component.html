@@ -1,5 +1,4 @@
 <div class="mb-2 border-primary" (click)="moveStone()">
-  <p>{{pit.stones}}</p>
-  <p>{{pit.player}}</p>
-  <p>P{{pit.position}}</p>
+  <p *ngIf="pit.bigPit">Total: {{pit.stones}}</p>
+  <p *ngIf="!pit.bigPit">{{pit.stones}}</p>
 </div>

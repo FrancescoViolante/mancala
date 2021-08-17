@@ -316,6 +316,7 @@ public class GameServiceImpl implements GameService {
                 int stonesToAdd = calculateRemainingStones(v);
                 bigPitByPlayerEnum.setStones(sumStonesToPit(stonesToAdd, bigPitByPlayerEnum));
             });
+            game.setFinished(true);
             resetStones(game.getPits().stream()
                     .filter(pit -> !pit.isBigPit()).collect(toList()));
         }
