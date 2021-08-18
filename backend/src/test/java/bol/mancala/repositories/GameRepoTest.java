@@ -35,7 +35,6 @@ class GameRepoTest {
         Game game = gameRepo.save(GameRes.createNewGameWithTwoPlayers());
         assertAll(
                 () -> assertThat(game.getPlayerAmount()).isEqualTo(2),
-                () -> assertThat(game.getPlayerAmount()).isEqualTo(2),
                 () -> assertThat(game.getPlayerWhoMove()).isEqualTo(PlayerEnum.P1),
                 numberOfStonesInGame(game),
                 allPitsHaveSameGameId(game),

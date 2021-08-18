@@ -1,7 +1,7 @@
 package bol.mancala.services;
 
 import bol.mancala.dto.MovePitRequestModel;
-import bol.mancala.expected.input.MovePitRequestModelImp;
+import bol.mancala.expected.input.MovePitRequestModelInp;
 import bol.mancala.expected.output.GameRes;
 import bol.mancala.entities.Game;
 import bol.mancala.repositories.GameRepo;
@@ -45,7 +45,7 @@ class GameServiceImplTest {
     void moveStonesGameNotPresentInDb() {
         when(gameRepo.findById(any(Long.class))).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelFirstMove()))
+        assertThatThrownBy(() -> gameServiceImpl.moveStones(MovePitRequestModelInp.createMovePitRequestModelFirstMove()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Game not present.");
     }
@@ -54,7 +54,7 @@ class GameServiceImplTest {
     void moveStonesInvalidPositionProvided() {
 
         Game game = GameRes.createNewGameWithTwoPlayers();
-        MovePitRequestModel movePitRequestModel = MovePitRequestModelImp.createMovePitRequestModelFirstMove();
+        MovePitRequestModel movePitRequestModel = MovePitRequestModelInp.createMovePitRequestModelFirstMove();
         game.getPits().removeIf(pit -> pit.getPosition() == movePitRequestModel.getPositionClicked());
 
         when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(game));
@@ -69,7 +69,7 @@ class GameServiceImplTest {
         when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createNewGameWithTwoPlayers()));
 
 
-        Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelFirstMove());
+        Game game = gameServiceImpl.moveStones(MovePitRequestModelInp.createMovePitRequestModelFirstMove());
 
         assertEquals(GameRes.gameWithTwoPlayersClickOnPositionFourFirstTurnExpected(), game);
     }
@@ -78,7 +78,7 @@ class GameServiceImplTest {
     void playerP1stealsStonesOfOpponent() {
         when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createAdvancedGameWithTwoPlayers()));
 
-        Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelP1StealsStones());
+        Game game = gameServiceImpl.moveStones(MovePitRequestModelInp.createMovePitRequestModelP1StealsStones());
 
         assertEquals(GameRes.gameWithTwoPlayersP1StealsStonesExpected(), game);
     }
@@ -87,7 +87,7 @@ class GameServiceImplTest {
     void playerP2stealsStonesOfOpponent() {
         when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createAdvancedGameWithTwoPlayers()));
 
-        Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelP2StealsStones());
+        Game game = gameServiceImpl.moveStones(MovePitRequestModelInp.createMovePitRequestModelP2StealsStones());
 
         assertEquals(GameRes.gameWithTwoPlayersP2StealsStonesExpected(), game);
     }
@@ -96,7 +96,7 @@ class GameServiceImplTest {
     void playerP2LastEndStealsStonesOfOpponentButLost() {
         when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createEndGameWithTwoPlayersP2LastTurn()));
 
-        Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelP2StealsStones());
+        Game game = gameServiceImpl.moveStones(MovePitRequestModelInp.createMovePitRequestModelP2StealsStones());
 
         assertEquals(GameRes.gameWithTwoPlayersP2LostFinalResultExpected(), game);
     }
@@ -105,7 +105,7 @@ class GameServiceImplTest {
     void playerP1LastEndStealsStonesOfOpponentAndWin() {
         when(gameRepo.findById(any(Long.class))).thenReturn(Optional.of(GameRes.createEndGameWithTwoPlayersP1LastTurn()));
 
-        Game game = gameServiceImpl.moveStones(MovePitRequestModelImp.createMovePitRequestModelP1StealsStones());
+        Game game = gameServiceImpl.moveStones(MovePitRequestModelInp.createMovePitRequestModelP1StealsStones());
 
         assertEquals(GameRes.gameWithTwoPlayersP1WinFinalResultExpected(), game);
     }

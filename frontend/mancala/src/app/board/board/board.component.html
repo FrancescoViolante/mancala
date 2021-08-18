@@ -5,7 +5,7 @@
 
     <div class="col-12 text-center">Player 2</div>
     <div class="boardImg">
-      <div class="row pt-2">
+      <div class="row pt-4">
 
         <ng-container *ngFor="let pit of game.pitP2.reverse(); let first = first; let last = last">
           <div [ngClass]="[pit.bigPit ? 'col-2' : 'col-1', first ? 'offset-1' : '']">
@@ -14,7 +14,7 @@
         </ng-container>
       </div>
 
-      <div class="row">
+      <div class="row  pb-4">
         <ng-container *ngFor="let pit of game.pitP1; let first = first">
           <div [ngClass]="[pit.bigPit ? 'col-2' : 'col-1', first ? 'offset-3': '']">
             <app-pit [pit]="pit" (onPitClicked)="pitClicked($event)"></app-pit>
@@ -25,7 +25,7 @@
     </div>
     <div class="col-12 text-center">Player 1</div>
     <div class="row border mt-5 border-dark" *ngIf="game.finished">
-      <div class="col-12 text-center">End game. {{winner}}</div>
+      <div class="col-12 text-center">Game over. {{winner}}</div>
     </div>
 
   </div>

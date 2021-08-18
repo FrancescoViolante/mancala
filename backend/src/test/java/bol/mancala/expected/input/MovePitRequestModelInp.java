@@ -3,7 +3,7 @@ package bol.mancala.expected.input;
 import bol.mancala.dto.MovePitRequestModel;
 import bol.mancala.dto.enums.PlayerEnum;
 
-public class MovePitRequestModelImp {
+public class MovePitRequestModelInp {
 
     public static MovePitRequestModel createMovePitRequestModelFirstMove() {
 

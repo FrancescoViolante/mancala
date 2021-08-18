@@ -1,14 +1,10 @@
 package bol.mancala.controllers;
 
-import bol.mancala.configuration.MappersConfig;
 import bol.mancala.dto.GameDto;
 import bol.mancala.dto.MovePitRequestModel;
-import bol.mancala.entities.Game;
+import bol.mancala.expected.input.MovePitRequestModelInp;
 import bol.mancala.expected.output.GameRes;
 import bol.mancala.mappers.GameMapper;
-import bol.mancala.mappers.GameMapperImpl;
-import bol.mancala.mappers.PitMapper;
-import bol.mancala.mappers.PitMapperImpl;
 import bol.mancala.services.GameService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,15 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,7 +23,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -42,12 +31,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest( webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GameControllerTest {
 
 
     private final static String URI = "/mancala";
+    private final GameMapper gameMapper = Mappers.getMapper(GameMapper.class);
 
     @MockBean
     private GameService gameService;
@@ -61,37 +51,35 @@ class GameControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
 
-
-
     @BeforeAll
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 
     }
 
-    /*
+
     @Test
     void createGame() throws Exception {
 
-        String jsonInString = objectMapper.writeValueAsString(GameRes.createNewGameWithTwoPlayers());
+        GameDto expected = gameMapper.gameToGameDto(GameRes.createNewGameWithTwoPlayers());
+        String jsonInString = objectMapper.writeValueAsString(expected);
 
         when(gameService.initializeBoard(2)).thenReturn(GameRes.createNewGameWithTwoPlayers());
+        when(gameService.saveOrUpdateGameInDataBase(any())).thenReturn(expected);
 
-
-        when(gameService.saveOrUpdateGameInDataBase(any())).thenReturn(new GameDto());
         mockMvc.perform(get(URI + "/new-game")).andExpect(status().isOk())
                 .andExpect(content().json(jsonInString))
                 .andDo(print());
-    }*/
+    }
 
 
     @Test
     public void moveStones_InvalidRequestBody() throws Exception {
 
 
-        MovePitRequestModel m = new MovePitRequestModel();
-        m.setGameId(1L);
-        String movePitReq = objectMapper.writeValueAsString(m);
+        MovePitRequestModel modelPitFirstTurn = new MovePitRequestModel();
+        modelPitFirstTurn.setGameId(1L);
+        String movePitReq = objectMapper.writeValueAsString(modelPitFirstTurn);
 
         mockMvc.perform(post(URI + "/move-stones")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -99,10 +87,26 @@ class GameControllerTest {
                 .andExpect(status().isBadRequest())
                 .andDo(print());
 
+    }
 
-               /* .andReturn()
-                .getResponse()
-                .getContentAsString();
-*/
+
+    @Test
+    public void moveStonesFirstTurnPlayer1Moves() throws Exception {
+
+        String movePitReq = objectMapper.writeValueAsString(MovePitRequestModelInp.createMovePitRequestModelFirstMove());
+        GameDto expected = gameMapper.gameToGameDto(GameRes.gameWithTwoPlayersClickOnPositionFourFirstTurnExpected());
+        final String jsonContent = objectMapper.writeValueAsString(expected);
+
+        when(gameService.moveStones(any())).thenReturn(GameRes.gameWithTwoPlayersClickOnPositionFourFirstTurnExpected());
+        when(gameService.saveOrUpdateGameInDataBase(any())).thenReturn(expected);
+
+        mockMvc.perform(post(URI + "/move-stones")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(movePitReq))
+                .andExpect(status().isOk())
+                .andExpect(content()
+                        .json(jsonContent))
+                .andDo(print());
+
     }
 }

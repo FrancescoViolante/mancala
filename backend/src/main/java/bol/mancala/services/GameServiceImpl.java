@@ -45,7 +45,6 @@ public class GameServiceImpl implements GameService {
         checkGameIdProvided(retrievedGame);
 
         Game game = retrievedGame.get();
-        //0 is not possible because is not clickable in FE
         Predicate<Pit> pitClickedPredicate = pit -> pit.getPosition() == movePitRequestModel.getPositionClicked();
         checkClickedPosition(game, pitClickedPredicate);
         GameUtil.setNextPitPosition(new LinkedList<>(game.getPits()));
@@ -58,7 +57,6 @@ public class GameServiceImpl implements GameService {
 
 
     public GameDto saveOrUpdateGameInDataBase(Game game) {
-
         return gameMapper.gameToGameDto(gameRepo.save(game));
     }
 

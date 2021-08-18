@@ -69,7 +69,6 @@ public class GameRes {
         return gameWithTwoPlayers;
     }
 
-
     public static Game createAdvancedGameWithTwoPlayers() {
 
 

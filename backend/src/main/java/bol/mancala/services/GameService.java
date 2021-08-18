@@ -20,5 +20,5 @@ public interface GameService {
 
     Game moveStones(MovePitRequestModel movePitRequestModel);
 
-     GameDto saveOrUpdateGameInDataBase(Game game);
+    GameDto saveOrUpdateGameInDataBase(Game game);
 }
