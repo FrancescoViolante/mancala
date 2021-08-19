@@ -319,8 +319,8 @@ public class GameServiceImpl implements GameService {
         }
     }
 
-    private Pit retrieveBigPitByPlayerEnum(Game game, PlayerEnum k) {
-        return game.getPits().stream().filter(Pit::isBigPit).filter(pit -> pit.getPlayer() == k).findFirst().orElseThrow();
+    private Pit retrieveBigPitByPlayerEnum(Game game, PlayerEnum playerEnum) {
+        return game.getPits().stream().filter(Pit::isBigPit).filter(pit -> pit.getPlayer() == playerEnum).findFirst().orElseThrow();
     }
 
     private int calculateRemainingStones(List<Pit> v) {
