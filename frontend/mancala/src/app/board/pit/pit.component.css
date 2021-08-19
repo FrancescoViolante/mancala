@@ -1,22 +1,25 @@
 .bigPit {
   background-image: url('../../img/bigPit.png');
   background-size: 100% 100%;
-  box-sizing: border-box;
-  height: 35px;
-  font-size:100%;
-  line-height:35px;
-  border-radius:50%;
-  text-align:center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  height: 150px;
+  width: 180px;
+  font-size:7vh;
 }
+
 
 .pit {
   background-image: url('../../img/pit.png');
   background-size: 100% 100%;
-  box-sizing: border-box;
-  height: 35px;
-  width: 35px;
-  font-size:100%;
-  line-height:35px;
-  border-radius:50%;
-  text-align:center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 50%;
+  height: 110px;
+  width: 110px;
+  font-size:5vh;
 }

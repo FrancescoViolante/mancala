@@ -1,8 +1,13 @@
 .boardImg {
   background-image: url('../../img/background.png');
   background-size: 100% 100%;
-  box-sizing: border-box;
-  height: auto;
-  width: auto;
-  position: relative;
+  height: 50vh;
+}
+
+
+.center-row{
+  height: 25vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
