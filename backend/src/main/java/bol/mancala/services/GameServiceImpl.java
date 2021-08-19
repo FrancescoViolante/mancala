@@ -42,9 +42,8 @@ public class GameServiceImpl implements GameService {
     public Game moveStones(MovePitRequestModel movePitRequestModel) {
 
         Optional<Game> retrievedGame = gameRepo.findById(movePitRequestModel.getGameId());
-        checkGameIdProvided(retrievedGame);
+        Game game = checkGameIdProvided(retrievedGame);
 
-        Game game = retrievedGame.get();
         Predicate<Pit> pitClickedPredicate = pit -> pit.getPosition() == movePitRequestModel.getPositionClicked();
         checkClickedPosition(game, pitClickedPredicate);
         GameUtil.setNextPitPosition(new LinkedList<>(game.getPits()));
@@ -66,10 +65,7 @@ public class GameServiceImpl implements GameService {
                 (!pit.getPlayer().equals(movePitRequestModel.getPlayerWhoMoved())
                         && pit.isBigPit());
 
-
-        pits.forEach(pit -> {
-            pit.setUpdatablePit(!pitClickedPredicate.test(pit) && !bigPitsOfOtherPlayerPredicate.test(pit));
-        });
+        pits.forEach(pit -> pit.setUpdatablePit(!pitClickedPredicate.test(pit) && !bigPitsOfOtherPlayerPredicate.test(pit)));
     }
 
     private void calculateNextTurnGame(Game game, MovePitRequestModel movePitRequestModel, Predicate<Pit> pitClickedPredicate) {
@@ -79,34 +75,37 @@ public class GameServiceImpl implements GameService {
         LinkedList<Pit> orderedPits = recreatePitListStartingFromPositionInInput(game.getPits(), pitClickedPredicate);
 
         updatePitStones(game, movePitRequestModel.getPlayerWhoMoved(), clickedPit, orderedPits);
-        updateClickedOrStealedPitStonesToZero(clickedPit);
+        updateClickedOrStolenPitStonesToZero(clickedPit);
     }
 
     private void updatePitStones(Game game, PlayerEnum playerWhoMoved, Pit clickedPit, LinkedList<Pit> orderedPits) {
-        int i = 0;
+        int pitsUpdated = 0;
 
         int positionNextElementToUpdate = calculateFirstPositionNextPitToUpdate(orderedPits.element());
-        while (i < clickedPit.getStones()) {
+        while (pitsUpdated < clickedPit.getStones()) {
 
             int finalPositionNextElementToUpdate = positionNextElementToUpdate;
-            Pit pitToUpdate = orderedPits.stream().filter(e -> e.getPosition() == finalPositionNextElementToUpdate).findFirst().get();
+            Pit pitToUpdate = orderedPits.stream().filter(e -> e.getPosition() == finalPositionNextElementToUpdate).findFirst().orElseThrow();
 
             incrementStoneNextPitByOne(pitToUpdate);
 
             Predicate<Pit> nextPositionPredicate = pit -> pit.getPosition() == calculateFirstPositionNextPitToUpdate(pitToUpdate);
 
             positionNextElementToUpdate = calculatePositionNextPitToUpdate(orderedPits, nextPositionPredicate);
-            i++;
-            if (isLastPitToUpdated(clickedPit, i)) {
-                calculateNextPlayerWhoMove(game, playerWhoMoved, pitToUpdate);
-                checkIfOpponentStonesCanBeStealed(game, playerWhoMoved, pitToUpdate);
-            }
+            pitsUpdated++;
+            calculateNextTurn(game, playerWhoMoved, clickedPit, pitsUpdated, pitToUpdate);
+        }
+    }
 
+    private void calculateNextTurn(Game game, PlayerEnum playerWhoMoved, Pit clickedPit, int pitsUpdated, Pit pitToUpdate) {
+        if (isLastPitToUpdated(clickedPit, pitsUpdated)) {
+            calculateNextPlayerWhoMove(game, playerWhoMoved, pitToUpdate);
+            checkIfOpponentStonesCanBeStealed(game, playerWhoMoved, pitToUpdate);
         }
     }
 
     private void checkIfOpponentStonesCanBeStealed(Game game, PlayerEnum playerWhoMoved, Pit pitToUpdate) {
-        if (hasPitSamePlayerWhoMoved(playerWhoMoved, pitToUpdate)
+        if (hasPitOfLastStoneMovedTheSamePlayerEnumWhoMoved(playerWhoMoved, pitToUpdate)
                 && isNotABigPit(pitToUpdate) && isAPitWithOneStone(pitToUpdate)) {
             createPitsForPlayerWithoutBigPits(game, pitToUpdate);
         }
@@ -150,14 +149,14 @@ public class GameServiceImpl implements GameService {
 
             Pit bigPitToUpdate = game.getPits().stream().filter(Pit::isBigPit)
                     .filter(pit -> pit.getPlayer().equals(stealerPit.getPlayer())).findFirst().orElseThrow();
-            bigPitToUpdate.setStones(sumStonesToPit(stonesToAddToOpponentBigPit, bigPitToUpdate));
-            updateClickedOrStealedPitStonesToZero(oppositePit);
-            updateClickedOrStealedPitStonesToZero(stealerPit);
+            sumStonesToPit(bigPitToUpdate, stonesToAddToOpponentBigPit, bigPitToUpdate);
+            updateClickedOrStolenPitStonesToZero(oppositePit);
+            updateClickedOrStolenPitStonesToZero(stealerPit);
         }
     }
 
-    private int sumStonesToPit(int stonesToAddToOpponentBigPit, Pit bigPitToUpdate) {
-        return Integer.sum(bigPitToUpdate.getStones(), stonesToAddToOpponentBigPit);
+    private void sumStonesToPit(Pit pitToUpdateStones , int stonesToAddToOpponentBigPit, Pit bigPitToUpdate) {
+         pitToUpdateStones.setStones(Integer.sum(bigPitToUpdate.getStones(), stonesToAddToOpponentBigPit));
     }
 
 
@@ -184,7 +183,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private void calculateNextPlayerWhoMove(Game game, PlayerEnum playerWhoMoved, Pit pitToUpdate) {
-        if (hasPitSamePlayerWhoMoved(playerWhoMoved, pitToUpdate)
+        if (hasPitOfLastStoneMovedTheSamePlayerEnumWhoMoved(playerWhoMoved, pitToUpdate)
                 && pitToUpdate.isBigPit()) {
             game.setPlayerWhoMove(playerWhoMoved);
         } else {
@@ -192,7 +191,7 @@ public class GameServiceImpl implements GameService {
         }
     }
 
-    private boolean hasPitSamePlayerWhoMoved(PlayerEnum playerWhoMoved, Pit pitToCheck) {
+    private boolean hasPitOfLastStoneMovedTheSamePlayerEnumWhoMoved(PlayerEnum playerWhoMoved, Pit pitToCheck) {
         return pitToCheck.getPlayer() == playerWhoMoved;
     }
 
@@ -201,7 +200,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private void incrementStoneNextPitByOne(Pit pitToUpdate) {
-        pitToUpdate.setStones(sumStonesToPit(INCREMENT_STONE, pitToUpdate));
+        sumStonesToPit(pitToUpdate, INCREMENT_STONE, pitToUpdate);
     }
 
     private Pit findPitClickedInPitList(Game game, Predicate<Pit> pitClickedPredicate) {
@@ -209,25 +208,26 @@ public class GameServiceImpl implements GameService {
                 .filter(pitClickedPredicate).findFirst().orElseThrow();
     }
 
-    private void updateClickedOrStealedPitStonesToZero(Pit clickedPit) {
+    private void updateClickedOrStolenPitStonesToZero(Pit clickedPit) {
         clickedPit.setStones(0);
     }
 
     private LinkedList<Pit> recreatePitListStartingFromPositionInInput(List<Pit> pits, Predicate<Pit> searchPitPredicate) {
-        Pit positionOfPitSearched = pits.stream().filter(searchPitPredicate).findFirst().get();
+        Pit positionOfPitSearched = pits.stream().filter(searchPitPredicate).findFirst().orElseThrow();
         LinkedList<Pit> orderedListByPositionInInput = new LinkedList<>();
-        List<Pit> pitsWithPositionMinorOfPitSearched = pits.subList(INITIAL_POSITION, pits.indexOf(positionOfPitSearched));
+        List<Pit> pitsWithPositionMinorOfPitClicked = pits.subList(INITIAL_POSITION, pits.indexOf(positionOfPitSearched));
         ListIterator<Pit> listIterator = pits.listIterator(pits.indexOf(positionOfPitSearched));
         while (listIterator.hasNext()) {
             orderedListByPositionInInput.add(listIterator.next());
         }
-        orderedListByPositionInInput.addAll(pitsWithPositionMinorOfPitSearched);
+        orderedListByPositionInInput.addAll(pitsWithPositionMinorOfPitClicked);
 
         return orderedListByPositionInInput;
     }
 
     private PlayerEnum calculatePlayerWhoStart(int playerAmount) {
-        int randomPlayerEnumValue = new Random().ints(FIRST_PLAYER, playerAmount + 1)
+        int playerAmountIncluded = playerAmount + 1;
+        int randomPlayerEnumValue = new Random().ints(FIRST_PLAYER, playerAmountIncluded)
                 .findFirst().orElse(1);
 
         return PlayerEnum.getPlayerEnumByValue(randomPlayerEnumValue);
@@ -235,19 +235,20 @@ public class GameServiceImpl implements GameService {
 
     private void checkClickedPosition(Game game, Predicate<Pit> positionClicked) {
 
-        long positionProvidedOccurrenciesInGame = game.getPits().stream()
+        long positionProvidedOccurrencesInGame = game.getPits().stream()
                 .filter(positionClicked)
                 .count();
 
-        if (positionProvidedOccurrenciesInGame != POSITION_CLICKED_IS_PRESENT)
-            throw new IllegalArgumentException("Position clicked is not present.");
+        if (positionProvidedOccurrencesInGame != POSITION_CLICKED_IS_PRESENT)
+            throw new IllegalArgumentException("Invalid position clicked.");
 
     }
 
 
-    private void checkGameIdProvided(Optional<Game> retrivedGame) {
+    private Game checkGameIdProvided(Optional<Game> retrivedGame) {
         if (retrivedGame.isEmpty())
             throw new IllegalArgumentException("Game not present.");
+        return retrivedGame.get();
     }
 
 
@@ -310,7 +311,7 @@ public class GameServiceImpl implements GameService {
             mapOfPitsByPlayerEnum.forEach((k, v) -> {
                 Pit bigPitByPlayerEnum = retrieveBigPitByPlayerEnum(game, k);
                 int stonesToAdd = calculateRemainingStones(v);
-                bigPitByPlayerEnum.setStones(sumStonesToPit(stonesToAdd, bigPitByPlayerEnum));
+                sumStonesToPit(bigPitByPlayerEnum, stonesToAdd, bigPitByPlayerEnum);
             });
             game.setFinished(true);
             resetStones(game.getPits().stream()
@@ -319,7 +320,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private Pit retrieveBigPitByPlayerEnum(Game game, PlayerEnum k) {
-        return game.getPits().stream().filter(Pit::isBigPit).filter(pit -> pit.getPlayer() == k).findFirst().get();
+        return game.getPits().stream().filter(Pit::isBigPit).filter(pit -> pit.getPlayer() == k).findFirst().orElseThrow();
     }
 
     private int calculateRemainingStones(List<Pit> v) {

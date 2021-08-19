@@ -24,7 +24,7 @@ public class GameUtil {
 
     public static  void calculatePlayerEnum(LinkedList<Pit> pits) {
         pits.forEach(pit -> {
-            if (pit.getPosition() == 0) {
+            if (pit.getPosition() == GameService.INITIAL_POSITION) {
                 pit.setPlayer(PlayerEnum.P1);
             } else {
                 int player = pit.getPosition() / GameService.POSITION_TO_ADD + 1;

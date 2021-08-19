@@ -61,7 +61,7 @@ class GameServiceImplTest {
 
         assertThatThrownBy(() -> gameServiceImpl.moveStones(movePitRequestModel))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Position clicked is not present.");
+                .hasMessageContaining("Invalid position clicked.");
     }
 
     @Test
