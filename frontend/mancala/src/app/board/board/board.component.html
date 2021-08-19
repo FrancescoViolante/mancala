@@ -3,7 +3,6 @@
   <div class="m-auto w-75">
     <div class="text-center mb-3 mt-2 border-dark ">Turn of Player {{game.playerWhoMove}}</div>
 
-    <div class="col-12 text-center">Player 2</div>
     <div class="boardImg">
       <div class="row">
         <ng-container *ngFor="let pit of game.pitP2.reverse(); let first = first; let last = last">
@@ -17,12 +16,14 @@
         </ng-container>
 
         <div class="col-3">
-          <div class="center-row"></div>
+          <h2 class="center-left">Player 2</h2>
         </div>
       </div>
+
+
       <div class="row">
         <div class="col-3">
-          <div class="center-row"></div>
+          <h2 class="center-row">Player 1</h2>
         </div>
         <ng-container *ngFor="let pit of game.pitP1; let first = first">
 
@@ -35,7 +36,8 @@
 
       </div>
     </div>
-    <div class="col-12 text-center">Player 1</div>
+
+
     <div class="row border mt-5 border-dark" *ngIf="game.finished">
       <div class="col-12 text-center">Game over. {{winner}}</div>
     </div>
