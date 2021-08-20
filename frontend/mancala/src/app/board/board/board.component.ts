@@ -71,7 +71,7 @@ export class BoardComponent {
     if (game.finished) {
       const totalPlayer1 = game.pitP1.find(pit => pit.bigPit).stones;
       const totalPlayer2 = game.pitP2.find(pit => pit.bigPit).stones;
-      this.winner = totalPlayer1 === totalPlayer2 ? 'We have a Draw' : totalPlayer1 > totalPlayer2 ? 'Winner is player 1' : 'Winner is player 2';
+      this.winner = totalPlayer1 === totalPlayer2 ? 'We have a Draw' : totalPlayer1 > totalPlayer2 ? 'Player 1 wins' : 'Player 2 wins';
     }
   }
 

@@ -4,6 +4,7 @@ import { BoardComponent } from './board/board.component';
 import { PitComponent } from './pit/pit.component';
 import {NewGameComponent} from "./newgame/new-game.component";
 import {FormsModule} from "@angular/forms";
+import {RemovePModule} from "../../remove-p/remove-p.module";
 
 
 
@@ -12,9 +13,10 @@ import {FormsModule} from "@angular/forms";
   exports: [
     BoardComponent
   ],
-    imports: [
-        CommonModule,
-        FormsModule
-    ]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RemovePModule
+  ]
 })
 export class BoardModule { }

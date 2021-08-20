@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import {BoardModule} from "./board/board.module";
 import {HttpClientModule} from "@angular/common/http";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {RemovePModule} from "../remove-p/remove-p.module";
 
 
 
@@ -18,7 +19,8 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
     AppRoutingModule,
     BoardModule,
     HttpClientModule,
-    NgbModule
+    NgbModule,
+    RemovePModule
   ],
   providers: [],
   bootstrap: [AppComponent]

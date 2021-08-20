@@ -1,7 +1,7 @@
 <div *ngIf="game">
 
   <div class="m-auto w-75">
-    <h1 class="text-center mb-3 mt-2 border-dark ">Turn of Player {{game.playerWhoMove}}</h1>
+    <h1 class="text-center mb-3 mt-2 border-dark ">Turn of Player {{game.playerWhoMove | removeP}}</h1>
 
     <div class="boardImg">
       <div class="row">
