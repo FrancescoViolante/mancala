@@ -43,10 +43,13 @@ export class BoardComponent {
             this.game = game;
           }),
           expand(game => {
+
+            let positionClicked = this.findElementToClick(game);
+
             const movePitReqModSinglePlayer: MovePitRequestModel = {
               gameId: this.game.gameId,
               playerWhoMoved: "P2",
-              positionClicked: this.findElementToClick(game)
+              positionClicked: positionClicked ? positionClicked.position : 0
             };
             this.checkEndgame(game);
             if (game.playerWhoMove === "P2" && !game.finished) {
@@ -74,6 +77,6 @@ export class BoardComponent {
 
   findElementToClick(game: GameDto) {
     const clickablePits = game.pitP2.filter(pit => !pit.bigPit).filter(pit => pit.stones !== 0);
-    return clickablePits[Math.floor(Math.random() * clickablePits.length)].position;
+    return clickablePits[Math.floor(Math.random() * clickablePits.length)];
   }
 }

@@ -103,3 +103,15 @@ body {
   50% { background-position: 400% 0; }
   100% { background-position: 0 0; }
 }
+
+.single-player-div {
+  justify-content: center;
+  position: absolute;
+  display: flex;
+  margin-left: auto;
+  min-height: 10em;
+  top: 90%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
