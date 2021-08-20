@@ -9,15 +9,18 @@ export class PitComponent implements OnInit {
 
 
   @Input() pit: PitDto;
-  @Output() onPitClicked : EventEmitter<any> = new EventEmitter<any>();
+  @Input() game: GameDto;
+  @Output() onPitClicked: EventEmitter<any> = new EventEmitter<any>();
 
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
   }
 
   moveStone() {
-    this.onPitClicked.emit(this.pit)
+    if ((!this.game.singlePlayer) || (this.game.singlePlayer && this.pit.player === "P1"))
+      this.onPitClicked.emit(this.pit)
   }
 }

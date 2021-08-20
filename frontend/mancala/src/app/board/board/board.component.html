@@ -1,7 +1,7 @@
 <div *ngIf="game">
 
   <div class="m-auto w-75">
-    <div class="text-center mb-3 mt-2 border-dark ">Turn of Player {{game.playerWhoMove}}</div>
+    <h1 class="text-center mb-3 mt-2 border-dark ">Turn of Player {{game.playerWhoMove}}</h1>
 
     <div class="boardImg">
       <div class="row">
@@ -9,7 +9,7 @@
 
           <div [ngClass]="[pit.bigPit ? 'col-3' : 'col-1']">
             <div class="center-row ">
-              <app-pit [pit]="pit" (onPitClicked)="pitClicked($event)"></app-pit>
+              <app-pit [pit]="pit" [game]="game" (onPitClicked)="pitClicked($event)"></app-pit>
             </div>
           </div>
 
@@ -29,7 +29,7 @@
 
           <div [ngClass]="[pit.bigPit ? 'col-2' : 'col-1']">
             <div class="center-row">
-              <app-pit [pit]="pit" (onPitClicked)="pitClicked($event)"></app-pit>
+              <app-pit [pit]="pit"  [game]="game" (onPitClicked)="pitClicked($event)"></app-pit>
             </div>
           </div>
         </ng-container>
@@ -38,8 +38,8 @@
     </div>
 
 
-    <div class="row border mt-5 border-dark" *ngIf="game.finished">
-      <div class="col-12 text-center">Game over. {{winner}}</div>
+    <div class="row border mt-5" *ngIf="game.finished">
+      <h2 class="col-12 text-center">Game over. {{winner}}</h2>
     </div>
 
   </div>
