@@ -3,6 +3,7 @@ package bol.mancala.controllers;
 
 import bol.mancala.dto.GameDto;
 import bol.mancala.dto.MovePitRequestModel;
+import bol.mancala.dto.NewGameRequestModel;
 import bol.mancala.entities.Game;
 import bol.mancala.services.GameService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,11 +31,10 @@ public class GameController {
             @ApiResponse(responseCode = "200", description = "Game saved."),
             @ApiResponse(responseCode = "500", description = "Error creating a new game.")
     })
-    @GetMapping("/new-game")
-    public ResponseEntity<GameDto> createGame() throws IllegalArgumentException{
-
-        Game gameToSave = gameService.initializeBoard(2);
-        return  ResponseEntity.ok(gameService.saveOrUpdateGameInDataBase(gameToSave));
+    @PostMapping("/new-game")
+    public ResponseEntity<GameDto> createGame(@Valid @RequestBody NewGameRequestModel newGameRequestModel){
+        Game gameToSave = gameService.initializeBoard(newGameRequestModel);
+        return ResponseEntity.ok(gameService.saveOrUpdateGameInDataBase(gameToSave));
     }
 
     @Operation(summary = "Move stones in pits")

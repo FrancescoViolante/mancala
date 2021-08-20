@@ -3,6 +3,7 @@ package bol.mancala.controllers;
 import bol.mancala.dto.GameDto;
 import bol.mancala.dto.MovePitRequestModel;
 import bol.mancala.expected.input.MovePitRequestModelInp;
+import bol.mancala.expected.input.NewGameRequestModelInp;
 import bol.mancala.expected.output.GameRes;
 import bol.mancala.mappers.GameMapper;
 import bol.mancala.services.GameService;
@@ -57,17 +58,39 @@ class GameControllerTest {
 
     }
 
+    @Test
+    void createNewGameSinglePlayers() throws Exception {
+
+        GameDto expected = gameMapper.gameToGameDto(GameRes.createNewGameSinglePlayers());
+        String jsonInString = objectMapper.writeValueAsString(expected);
+        String newGameSinglePlayersRequest = objectMapper.writeValueAsString(NewGameRequestModelInp.createNewGameSingleplayer());
+
+        when(gameService.initializeBoard(any())).thenReturn(GameRes.createNewGameWithTwoPlayers());
+        when(gameService.saveOrUpdateGameInDataBase(any())).thenReturn(expected);
+
+        mockMvc.perform(post(URI + "/new-game")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newGameSinglePlayersRequest))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonInString))
+                .andDo(print());
+    }
+
 
     @Test
-    void createGame() throws Exception {
+    void createNewGameTwoPlayers() throws Exception {
 
         GameDto expected = gameMapper.gameToGameDto(GameRes.createNewGameWithTwoPlayers());
         String jsonInString = objectMapper.writeValueAsString(expected);
+        String newGameTwoPlayersRequest = objectMapper.writeValueAsString(NewGameRequestModelInp.createNewGameMultiplayer());
 
-        when(gameService.initializeBoard(2)).thenReturn(GameRes.createNewGameWithTwoPlayers());
+        when(gameService.initializeBoard(any())).thenReturn(GameRes.createNewGameWithTwoPlayers());
         when(gameService.saveOrUpdateGameInDataBase(any())).thenReturn(expected);
 
-        mockMvc.perform(get(URI + "/new-game")).andExpect(status().isOk())
+        mockMvc.perform(post(URI + "/new-game")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newGameTwoPlayersRequest))
+                .andExpect(status().isOk())
                 .andExpect(content().json(jsonInString))
                 .andDo(print());
     }

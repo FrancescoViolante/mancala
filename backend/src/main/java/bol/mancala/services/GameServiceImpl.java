@@ -2,6 +2,7 @@ package bol.mancala.services;
 
 import bol.mancala.dto.GameDto;
 import bol.mancala.dto.MovePitRequestModel;
+import bol.mancala.dto.NewGameRequestModel;
 import bol.mancala.dto.enums.PlayerEnum;
 import bol.mancala.entities.Game;
 import bol.mancala.entities.Pit;
@@ -24,12 +25,12 @@ public class GameServiceImpl implements GameService {
     private final GameRepo gameRepo;
     private final GameMapper gameMapper;
 
-    public Game initializeBoard(int playerAmount) {
+    public Game initializeBoard(NewGameRequestModel newGameRequestModel) {
 
-
-        List<Pit> pits = createPits(playerAmount);
-        Game game = Game.builder().playerAmount(playerAmount)
-                .playerWhoMove(calculatePlayerWhoStart(playerAmount))
+        List<Pit> pits = createPits(newGameRequestModel.getPlayerAmount());
+        Game game = Game.builder().playerAmount(newGameRequestModel.getPlayerAmount())
+                .playerWhoMove(calculatePlayerWhoStart(newGameRequestModel))
+                .singlePlayer(newGameRequestModel.isSinglePlayer())
                 .pits(pits).build();
 
         pits.forEach(pit -> pit.setGame(game));
@@ -225,8 +226,11 @@ public class GameServiceImpl implements GameService {
         return orderedListByPositionInInput;
     }
 
-    private PlayerEnum calculatePlayerWhoStart(int playerAmount) {
-        int playerAmountIncluded = playerAmount + 1;
+    private PlayerEnum calculatePlayerWhoStart(NewGameRequestModel newGameRequestModel) {
+
+        if(newGameRequestModel.isSinglePlayer())  return PlayerEnum.P1;
+
+        int playerAmountIncluded = newGameRequestModel.getPlayerAmount() + 1;
         int randomPlayerEnumValue = new Random().ints(FIRST_PLAYER, playerAmountIncluded)
                 .findFirst().orElse(1);
 
@@ -248,6 +252,9 @@ public class GameServiceImpl implements GameService {
     private Game checkGameIdProvided(Optional<Game> retrivedGame) {
         if (retrivedGame.isEmpty())
             throw new IllegalArgumentException("Game not present.");
+        if(retrivedGame.get().isFinished()){
+            throw new IllegalArgumentException("Game finished.");
+        }
         return retrivedGame.get();
     }
 

@@ -40,6 +40,12 @@ public class GameRes {
         return game;
     }
 
+    public static Game createNewGameSinglePlayers() {
+        Game game = createNewGameWithTwoPlayers();
+        game.setSinglePlayer(true);
+        return game;
+    }
+
     private static void adaptBigPitValues(Pit pit, int bigPitStones) {
         if (pit.getPosition() == 6 || pit.getPosition() == 13) {
             pit.setBigPit(Boolean.TRUE);

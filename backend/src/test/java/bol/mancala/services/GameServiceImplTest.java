@@ -2,6 +2,7 @@ package bol.mancala.services;
 
 import bol.mancala.dto.MovePitRequestModel;
 import bol.mancala.expected.input.MovePitRequestModelInp;
+import bol.mancala.expected.input.NewGameRequestModelInp;
 import bol.mancala.expected.output.GameRes;
 import bol.mancala.entities.Game;
 import bol.mancala.repositories.GameRepo;
@@ -31,13 +32,23 @@ class GameServiceImplTest {
     @Test
     void initializeBoard() {
 
-
-        Game game = gameServiceImpl.initializeBoard(2);
+        Game game = gameServiceImpl.initializeBoard(NewGameRequestModelInp.createNewGameMultiplayer());
         assertAll(
                 () -> assertThat(game.getPits().size()).isEqualTo(14),
                 () -> assertThat(game.getPlayerAmount()).isEqualTo(2)
         );
     }
+
+    @Test
+    void initializeBoardSinglePlayer() {
+
+        Game game = gameServiceImpl.initializeBoard(NewGameRequestModelInp.createNewGameMultiplayer());
+        assertAll(
+                () -> assertThat(game.getPits().size()).isEqualTo(14),
+                () -> assertThat(game.getPlayerAmount()).isEqualTo(2)
+        );
+    }
+
 
 
 

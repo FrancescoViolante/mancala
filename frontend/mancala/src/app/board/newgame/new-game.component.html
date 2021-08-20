@@ -1,5 +1,14 @@
-<div class="home">
+<div>
+  <form (ngSubmit)=newGame()>
+    <div class="form-check form-switch home ">
+    <div class="d-flex justify-content-around ">
+      <div>
+      <input class="form-check-input" type="checkbox" name="isSinglePlayer" id="flexSwitchCheckDefault" [(ngModel)]="isSinglePlayer">
+      <label class="form-check-label " for="flexSwitchCheckDefault">SinglePlayer</label>
+    </div>
+    </div>
+      <button type="submit" class="glow-on-hover">New Game</button>
 
-  <button class="glow-on-hover" (click)="newGame()">New Game</button>
-
+    </div>
+  </form>
 </div>

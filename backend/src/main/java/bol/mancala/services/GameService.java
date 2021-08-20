@@ -2,6 +2,7 @@ package bol.mancala.services;
 
 import bol.mancala.dto.GameDto;
 import bol.mancala.dto.MovePitRequestModel;
+import bol.mancala.dto.NewGameRequestModel;
 import bol.mancala.entities.Game;
 
 public interface GameService {
@@ -16,7 +17,7 @@ public interface GameService {
     int INCREMENT_STONE = 1;
     long POSITION_CLICKED_IS_PRESENT = 1L;
 
-    Game initializeBoard(int playerAmount);
+    Game initializeBoard(NewGameRequestModel newGameRequestModel);
 
     Game moveStones(MovePitRequestModel movePitRequestModel);
 

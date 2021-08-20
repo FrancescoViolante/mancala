@@ -5,6 +5,7 @@ CREATE TABLE if not exists mancala.GAME
     gameId        LONG AUTO_INCREMENT PRIMARY KEY,
     playerAmount  INT(1) NOT NULL,
     playerWhoMove varchar(2),
+    singlePlayer boolean,
     finished boolean
 );
 

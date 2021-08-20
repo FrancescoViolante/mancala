@@ -19,5 +19,6 @@ public class GameDto {
     private List<PitDto> pitP1 = new LinkedList<>();
     private List<PitDto> pitP2 = new LinkedList<>();
 
+    private boolean singlePlayer;
     private boolean finished;
 }
