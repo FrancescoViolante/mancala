@@ -37,10 +37,10 @@
       </div>
     </div>
 
-
-    <div class="row border mt-5" *ngIf="game.finished">
+    <div class="row border mt-5"  [style.display]="game.finished ? 'block' : 'none'">
       <h2 class="col-12 text-center">Game over. {{winner}}</h2>
     </div>
+
 
   </div>
 </div>
