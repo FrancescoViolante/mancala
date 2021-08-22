@@ -15,6 +15,14 @@ export class BoardComponent {
 
   constructor(private boardService: BoardService) {
 
+    let newGameRequestModel = boardService.getModel();
+
+    if(newGameRequestModel === undefined){
+      this.boardService.setModel({
+        playerAmount : 2,
+        singlePlayer : false
+      });
+    }
     this.boardService.createNewGame(boardService.getModel()).subscribe((game) => {
       this.game = game
     });

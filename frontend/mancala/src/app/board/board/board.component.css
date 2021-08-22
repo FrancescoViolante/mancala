@@ -19,3 +19,10 @@
   justify-content: left;
   margin-left: 40px;
 }
+
+.board-position{
+  top: 25%;
+  position: absolute;
+  margin: auto;
+  width: 100%;
+}
